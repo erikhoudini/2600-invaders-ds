@@ -39,3 +39,20 @@ function overDraw(dt){overT+=dt;light=1;renderBack();skyFill();krWalls();krSprit
   if(P.newBest||P.newRace)textC(P.newRace?'NEW BEST RACE TIME':'NEW BEST',y+4,((overT*4)|0)&1?C_Y:C_W,1,C_K);
   if(overT>1)textC(UI_TOUCH?'TAP TO DRIVE AGAIN':'ENTER: AGAIN   ESC: TITLE',VH-10,C_W,1,C_K);
   rect(0,VH,SW,SH-VH,C_K);show(2);}
+
+/* ---------- the garage: pick a car, shown as a turning box on the street ---------- */
+const GARAGE=['player','pPickup','pCruiser'];let GSEL=0,garageT=0;
+function garageOpen(){state='garage';garageT=0;play('menu',.5,1.1);}
+function wrapLine(t,n){const out=[];let cur='';for(const w of t.split(' ')){if((cur+' '+w).trim().length>n){out.push(cur);cur=w;}else cur=(cur+' '+w).trim();}if(cur)out.push(cur);return out;}
+function garageFrame(dt){garageT+=dt;titleT+=dt;P.x=L.sx;P.y=L.sy+2;P.a=-Math.PI/2;P.fov=.66;setDir();HZ=HALF;updPeds(dt);updParts(dt);
+  light=1;renderBack();skyFill();krWalls();krSprites();dim(.4);
+  const K=CARK[GARAGE[GSEL]];light=1.15;drawCarBox({x:P.x,y:P.y-3.1,a:garageT*.7+.6,sc:1},BODY[K.body],C_K);light=1;clash();
+  rect(0,VH,SW,SH-VH,C_K);
+  textC((GAMEMODE==='race'?'RACE':'WAVES')+': CHOOSE YOUR CAR',6,C_C,1,C_K);
+  shadowText(K.name,20,C_Y,3);text('\u25C0',10,30,GSEL>0?C_W:C_GR,2);text('\u25B6',SW-24,30,GSEL<GARAGE.length-1?C_W:C_GR,2);
+  const bars=[['SPEED',K.top/14],['ACCEL',K.acc/11],['GRIP',K.grip/17],['ARMOR',K.hp/150],['WEIGHT',K.mass/1.8]];
+  bars.forEach(([n,v],i)=>{const y=150+i*9;text(n,14,y,C_GR,1,C_K);rect(64,y+1,80,5,C_DR);rect(64,y+1,Math.round(80*Math.min(1,v)),5,C_Y);});
+  wrapLine(K.blurb,22).forEach((l,i)=>text(l,156,150+i*9,C_W,1,C_K));
+  textC(UI_TOUCH?'TAP THE SIDES TO PICK, MIDDLE TO DRIVE':'LEFT RIGHT PICKS  ENTER DRIVES  ESC BACK',VH+10,((garageT*2)|0)%2?C_W:C_GR);
+  textC('R REPAIRS FOR $1,000   T RECOVERS FOR $500',VH+24,C_GR);
+  show(2);}

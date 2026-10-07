@@ -2,7 +2,7 @@
 // Boot a built game in headless Chromium, play a few seconds of it, and fail on
 // any page error. Needs Playwright (npm i -g playwright, or on NODE_PATH).
 //   node tools/smoke.mjs bagman   [screenshot-dir]   walks splash -> menu -> chapter 1, moves and fires
-//   node tools/smoke.mjs killrace [screenshot-dir]   title -> drive, steer, fire, lock on
+//   node tools/smoke.mjs killrace [screenshot-dir]   title -> garage -> drive, steer, fire, lock on
 import path from 'node:path';
 import fs from 'node:fs';
 import {createRequire} from 'node:module';
@@ -43,7 +43,7 @@ if (game === 'bagman') {
   await key('Enter', 3000);                             // START
   await hold('KeyW', 1200); await key('Space', 800);
 } else {
-  await key('Enter', 1200); await shot('2-start');
+  await key('Enter', 800); await shot('2-garage'); await key('Enter', 1200); await shot('3-start');
   await page.keyboard.down('KeyW'); await wait(900);
   await hold('KeyA', 400); await key('KeyE', 200); await hold('Space', 900);
   await page.keyboard.up('KeyW'); await key('Escape', 500); await shot('3-pause'); await key('Escape', 300);

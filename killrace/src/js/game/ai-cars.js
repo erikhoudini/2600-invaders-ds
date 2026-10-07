@@ -10,12 +10,13 @@
    ===================================================================== */
 const ROLE={sedanR:'gun',sedanW:'gun',sedanY:'gun',pickup:'gun',cruiser:'ram',bike:'bike'};
 function steerTo(c,tx,ty){const d=angDiff(c.a,Math.atan2(ty-c.y,tx-c.x));return d;}
-function flowTarget(c,f=L.cflow){const W=L.W;let i=Math.floor(c.y)*W+Math.floor(c.x);
-  for(let k=0;k<4;k++){let b=i,bv=f[i];for(const o of[1,-1,W,-W,W+1,W-1,-W+1,-W-1]){const v=f[i+o];if(v<bv&&!L.map[i+o]&&!L.block[i+o]){bv=v;b=i+o;}}if(b===i)break;i=b;}
+function flowTarget(c,f=L.cflow,steps=4){const W=L.W;let i=Math.floor(c.y)*W+Math.floor(c.x);
+  for(let k=0;k<steps;k++){let b=i,bv=f[i];for(const o of[1,-1,W,-W,W+1,W-1,-W+1,-W-1]){const v=f[i+o];if(v<bv&&!L.map[i+o]&&!L.block[i+o]){bv=v;b=i+o;}}if(b===i)break;i=b;}
   return[(i%W)+.5,((i/W)|0)+.5];}
 
 function updAICar(c,dt){
-  if(c.flash>0)c.flash-=dt;if(c.fireT>0)c.fireT-=dt;
+  if(c.flash>0)c.flash-=dt;if(c.fireT>0)c.fireT-=dt;if(c.angry>0)c.angry-=dt;
+  if(c.traffic&&!c.dead){driveTraffic(c,dt);return;}
   if(c.dead||c.parked){if(c.wreck){c.wreckT-=dt;c.vx*=Math.max(0,1-dt*2);c.vy*=Math.max(0,1-dt*2);moveCar(c,dt);
       if(rnd()<dt*14)addPart(c.x+(rnd()-.5)*.6,c.y+(rnd()-.5)*.6,.4+rnd()*.3,(rnd()-.5)*.3,(rnd()-.5)*.3,1+rnd(),rnd()<.5?[255,200,0]:[255,70,0],.04,.5,2);
       if(rnd()<dt*5)addPart(c.x,c.y,.9,(rnd()-.5)*.2,(rnd()-.5)*.2,1,[60,60,60],.09,1.6,4);}
@@ -34,27 +35,35 @@ function updAICar(c,dt){
   else[tx,ty]=flowTarget(c);
   // racers drive the course, and only go for the player when he is right there in front of them
   if(c.racer){[tx,ty]=flowTarget(c,L.cpField[c.cp]);boost=false;thr=1;
-    if(c.los&&!P.dead&&dist<9&&c.aggro&&Math.abs(angDiff(c.a,toP))<.5){tx=P.x+P.vx*.3;ty=P.y+P.vy*.3;}
+    if(c.los&&!P.dead&&dist<9&&c.aggro&&speedOf(P)>2&&Math.abs(angDiff(c.a,toP))<.5){tx=P.x+P.vx*.3;ty=P.y+P.vy*.3;}
+    // Burnout's rivals: hit one and he comes for you for a while
+    if(c.angry>0&&c.los&&!P.dead&&dist<22){tx=P.x+P.vx*.4;ty=P.y+P.vy*.4;}
     if(Math.abs(angDiff(c.a,Math.atan2(ty-c.y,tx-c.x)))<.08&&c.nitro>0){boost=true;c.nitro-=dt*30;}else c.nitro=Math.min(100,(c.nitro||0)+dt*6);}
   let da=steerTo(c,tx,ty);
   // feelers: turn away from a wall coming up, unless we are lined up on the player
   if(!c.los||dist>6){const look=Math.min(4,1+sp*.3);const fl=cast(c.x,c.y,Math.cos(c.a-.45),Math.sin(c.a-.45),look),fr=cast(c.x,c.y,Math.cos(c.a+.45),Math.sin(c.a+.45),look);
     const tl=fl?fl.t:look,tr=fr?fr.t:look;if(tl<look||tr<look)da+=(tr-tl)*.35;}
   const inp={thr,brake:0,steer:clamp(da*2.4,-1,1),hand:false,boost};
+  // brake for the corner coming up: look further down the route and slow for how sharp it turns; long vehicles slow more
+  if(!c.los||c.racer){let ff=L.cflow;if(c.racer){const[cx,cy]=RACE.cps[c.cp];ff=L.cpField[Math.hypot(c.x-cx,c.y-cy)<9?(c.cp+1)%RACE.cps.length:c.cp];}
+    const[fx,fy]=flowTarget(c,ff,10),far=Math.abs(angDiff(c.a,Math.atan2(fy-c.y,fx-c.x)));
+    const want=c.K.top*(c.tmul||1)*(1-Math.min(.7,far*.6*(c.K.wb/1.15)));if(sp>want+.5){inp.thr=0;inp.brake=Math.min(1,(sp-want)*.4);inp.boost=false;}}
   if(Math.abs(da)>1.3&&sp>7){inp.thr=0;inp.brake=.6;}
   // stuck against something: back out, turning the other way
   if(c.stuckT>0){c.stuckT-=dt;inp.thr=0;inp.brake=1;inp.steer=-c.stuckDir;}
   else{if(sp<1.2)c.stk+=dt;else{c.stk=Math.max(0,c.stk-dt*2);if(sp>5)c.stuckN=Math.max(0,(c.stuckN||0)-dt*.3);}
-    if(c.stk>1){c.stk=0;c.stuckN=(c.stuckN||0)+1;c.stuckT=.7+rnd()*.5;
+    if(c.stk>1){c.stk=0;c.stuckN=(c.stuckN||0)+1;c.stuckT=1.2+rnd()*.6;
       // alternate the way we back out, and if that keeps failing, get put back on the road out of sight
-      c.stuckDir=c.stuckN%2?(Math.sign(da)||1):-(Math.sign(da)||1);if(c.stuckN>=3&&(!c.los||dist>12))unstick(c);}}
+      c.stuckDir=c.stuckN%2?(Math.sign(da)||1):-(Math.sign(da)||1);if(c.stuckN>=3||(c.stuckN>=2&&(!c.los||dist>12)))unstick(c);}}
   stepCar(c,dt,inp);
   // guns
   c.cool-=dt;if(c.burst>0){c.burstT-=dt;if(c.burstT<=0){c.burst--;c.burstT=.11;aiShoot(c,toP,dist);}}
   if(!c.los||P.dead||c.cool>0)return;const off=Math.abs(angDiff(c.a,toP));
   if(c.K.gun==='mg'&&dist<24&&off<.35){c.burst=3+(c.boss?3:0);c.burstT=0;c.cool=1.4+rnd()*1.1;}
   else if(c.K.gun==='shot'&&dist<14&&off<.6){c.cool=1.6+rnd();for(let k=-2;k<=2;k++)aiShoot(c,toP+k*.09,dist,1);if(c.boss&&dist>6)throwDyn(toP,true,c);}
-  else if(c.K.gun==='dyn'&&dist>5&&dist<16){c.cool=2.6+rnd()*1.2;c.fireT=.3;throwDyn(toP,true,c);}}
+  else if(c.K.gun==='dyn'&&dist>5&&dist<16){c.cool=2.6+rnd()*1.2;c.fireT=.3;throwDyn(toP,true,c);}
+  // the motorhome drops fuel drums out the back when you are on its tail
+  else if(c.K.gun==='drum'&&dist<16&&Math.cos(angDiff(c.a,toP))<-.5){c.cool=2.2+rnd();dropDrumFrom(c);}}
 function aiShoot(c,a,dist,big){a+=(rnd()-.5)*.06;const s=big?13:16;c.fireT=.15;
   L.shots.push({x:c.x+Math.cos(a)*.7,y:c.y+Math.sin(a)*.7,z:.5,vx:Math.cos(a)*s,vy:Math.sin(a)*s,dmg:big?1.8:1.6,life:2.6,big:big?1:0,own:c,age:0});
   SFX.eshot(Math.max(.15,1-dist/26));}

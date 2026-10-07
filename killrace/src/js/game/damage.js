@@ -13,17 +13,23 @@ function hurtPlayer(dmg,fromAng,src){if(state!=='play'||P.dead)return;P.dmgBy[sr
   if(P.hp<=0)wreckPlayer();}
 function wreckPlayer(){P.hp=0;P.dead=1;state='wrecked';deathT=0;P.lock=null;SFX.pdie();kaboom(P.x,P.y,true,false,true);CRT.hit=1;bigMsg('WRECKED',3,C_R);rumbleOn(false);}
 
-function damageCar(c,dmg,by,ang){if(c.dead||dmg<=0)return;c.hp-=dmg;c.flash=.07;if(by===P)c.lastP=tm;
+function damageCar(c,dmg,by,ang){if(c.dead||dmg<=0)return;c.hp-=dmg;c.flash=.07;if(by===P){c.lastP=tm;if(c.racer||!c.traffic)c.angry=Math.max(c.angry||0,5);if(c.traffic)c.panic=4;}
   if(c.parked&&!c.awake&&c.hp<c.hp0*.5)c.awake=1;
   if(c.hp<=0)wreckCar(c);}
 // a car that dies goes up, leaves a burning shell that still blocks the road for a while, and pays out if we did it
 function wreckCar(c){c.dead=1;c.wreck=1;c.wreckT=12;c.vx*=.4;c.vy*=.4;c.burn=1;
   const byP=tm-c.lastP<4;kaboom(c.x,c.y,true,byP,false,.45);
-  if(byP&&!c.parked){P.kills++;const m=chainKill(),v=c.K.score*(c.boss?5:1)*m;P.score+=v;feed('+'+money(v)+(c.boss?' '+c.name:''),C_C);
-    if(c.boss)bigMsg(c.name+' IS DEAD',2.6,C_R);else if(P.chain<3)bigMsg('WRECKED '+c.name,1.4,C_R);
-    if(rnd()<.45||c.boss)lootDrop(c.x,c.y);}
-  else if(byP&&c.parked){P.score+=250;feed('+$250 PARKED CAR',C_GR);}
-  if(P.lock===c)P.lock=null;}
+  if(P.lock===c)P.lock=null;if(!byP)return;
+  if(c.parked){P.score+=250;feed('+$250 PARKED CAR',C_GR);return;}
+  if(c.traffic){P.score+=300;feed('+$300 CIVILIAN',C_GR);addTime(2);return;}
+  // Burnout's takedown: a car you rammed in the last couple of seconds counts double, and fills the nitro
+  const td=tm-(c.lastRam||-9)<2.5;if(td)P.nitro=100;
+  P.kills++;const m=chainKill(),v=(c.K.score+(td?500:0))*(c.boss?5:1)*m;P.score+=v;addTime(td?10:7);
+  feed('+'+money(v)+(td?' TAKEDOWN':''),C_C);
+  if(c.boss)bigMsg((td?'TAKEDOWN! ':'')+c.name+' IS DEAD',2.6,C_R);
+  else if(td){bigMsg('TAKEDOWN!',1.4,C_Y);CRT.boom=Math.max(CRT.boom,.4);}
+  else if(P.chain<3)bigMsg('WRECKED '+c.name,1.4,C_R);
+  if(rnd()<.45||c.boss)lootDrop(c.x,c.y);}
 
 function detonate(t,delay){if(t.fuse!==undefined)return;t.fuse=delay;L.fuses.push(t);}
 function updFuses(dt){for(let i=L.fuses.length-1;i>=0;i--){const t=L.fuses[i];t.fuse-=dt;if(t.fuse>0)continue;L.fuses.splice(i,1);
@@ -66,6 +72,6 @@ function footDown(e,ang,gibIt){const v=Math.max(.15,1-Math.hypot(e.x-P.x,e.y-P.y
 // civilians: no score for shooting them, a little for the Carmageddon thing
 function killPed(p,ang,gibIt,byP,runOver){if(p.st==='dying'||p.st==='dead')return;
   blood(p.x,p.y,.5,ang,18,1.6);footDown(p,ang,gibIt);p.deadT=0;
-  if(byP){P.peds++;if(runOver){const m=chainKill(),v=100*m;P.score+=v;feed('SPLAT +'+money(v),C_R);play('splat',.8);}else feed('THAT WAS A CIVILIAN',C_GR);}}
+  if(byP){P.peds++;if(runOver){const m=chainKill(),v=100*m;P.score+=v;feed('SPLAT +'+money(v),C_R);play('splat',.8);addTime(2);}else feed('THAT WAS A CIVILIAN',C_GR);}}
 function panicAt(x,y,r){for(const p of L.peds)if(p.st!=='dead'&&p.st!=='dying'&&Math.hypot(p.x-x,p.y-y)<r){p.panic=2+rnd()*2;p.fromX=x;p.fromY=y;}}
 function carHit(){}

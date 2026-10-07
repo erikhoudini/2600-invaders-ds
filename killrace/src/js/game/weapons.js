@@ -19,7 +19,7 @@ const LOCK_CONE=.7,LOCK_RANGE=34,AIM_SWING=.45;
 function lockOK(e){if(!e)return false;if(e.K)return !e.dead;return e.st!=='dead'&&e.st!=='dying';}
 function lockTargets(){const out=[];const add=e=>{const dx=e.x-P.x,dy=e.y-P.y,d=Math.hypot(dx,dy);if(d>LOCK_RANGE)return;const a=angDiff(P.a,Math.atan2(dy,dx));
     if(Math.abs(a)>LOCK_CONE||!hasLOS(P.x,P.y,e.x,e.y))return;out.push({e,s:Math.abs(a)*12+d*(e.K?1:1.6)});};
-  for(const c of L.vcars)if(!c.dead&&!c.parked)add(c);for(const e of L.enemies)if(e.st!=='idle'&&lockOK(e))add(e);
+  for(const c of L.vcars)if(!c.dead&&!c.parked&&!c.traffic)add(c);for(const e of L.enemies)if(e.st!=='idle'&&lockOK(e))add(e);
   return out.sort((a,b)=>a.s-b.s);}
 function lockCycle(){const ts=lockTargets();if(!ts.length){if(P.lock){P.lock=null;SFX.unlock();}return;}
   const i=ts.findIndex(t=>t.e===P.lock);P.lock=ts[(i+1)%ts.length].e;P.lockLost=0;SFX.lock();}
@@ -34,7 +34,7 @@ function tryFire(){if(P.cool>0||P.dead)return;const g=gunNow();
   if(P.flame>0){P.cool=g.rate;P.anim={i:0,t:0};flameShot();return;}
   if(g.ammo&&ammoLeft(P.w)<=0){SFX.empty();P.cool=.3;P.w=0;return;}
   P.cool=g.rate;P.anim={i:0,t:0};const a=aimAngle(),locked=lockOK(P.lock);
-  if(P.w===0){SFX.tommy();P.flash=.05;P.recoil=3;shake=Math.max(shake,.12);ray(a+(rnd()-.5)*(locked?.016:.035),45,7,11,.2);}
+  if(P.w===0){if(P.hot){P.cool=.12;return;}P.heat+=.05;if(P.heat>=1){P.hot=1;feed('GUNS OVERHEATED',C_R);play('empty',.6,.7);}SFX.tommy();P.flash=.05;P.recoil=3;shake=Math.max(shake,.12);ray(a+(rnd()-.5)*(locked?.016:.035),45,7,11,.2);}
   else if(P.w===1){P.s--;SFX.shotgun();P.flash=.07;P.recoil=10;shake=Math.max(shake,.5);for(let k=0;k<9;k++)ray(a+(rnd()-.5)*.15,24,7,13,.35);}
   else{P.d--;throwDyn(a,false);}
   borderFlash=.04;borderFlashIdx=P.w===1?14:15;gunNoise();}
@@ -84,5 +84,9 @@ function updFlames(dt){const F=L.pflames;for(let i=F.length-1;i>=0;i--){const s=
 function dropDrum(){if(!(P.drums>0)||P.dead)return;const x=P.x-P.dx*1.4,y=P.y-P.dy*1.4,i=Math.floor(y)*L.W+Math.floor(x);
   if(L.map[i]||L.block[i]||L.vcars.some(c=>Math.hypot(c.x-x,c.y-y)<.9)){feed('NO ROOM BEHIND',C_GR);return;}
   P.drums--;addBoom(L,Math.floor(x)+.5,Math.floor(y)+.5,'XDRUM');const t=L.things[L.things.length-1];t.mine=1;t.byP=1;t.arm=.8;L.cflowT=0;play('push',.6,.7);}
+function dropDrumFrom(c){const x=c.x-Math.cos(c.a)*(c.r+1.1),y=c.y-Math.sin(c.a)*(c.r+1.1),i=Math.floor(y)*L.W+Math.floor(x);
+  if(L.map[i]||L.block[i])return;addBoom(L,Math.floor(x)+.5,Math.floor(y)+.5,'XDRUM');const t=L.things[L.things.length-1];t.mine=1;t.arm=.6;t.from=c;L.cflowT=0;play('push',.4,.7);}
+// mines go off when a car rolls up to them: anyone's for enemy cars, the enemy's for the player
 function updMines(dt){for(const t of L.things){if(!t.mine||t.fuse!==undefined)continue;if(t.arm>0){t.arm-=dt;continue;}
-  for(const c of L.vcars)if(!c.dead&&!c.parked&&Math.hypot(c.x-t.x,c.y-t.y)<c.r+.5){detonate(t,0);break;}}}
+  if(!t.byP&&!P.dead&&Math.hypot(P.x-t.x,P.y-t.y)<P.r+.5){detonate(t,0);continue;}
+  for(const c of L.vcars)if(!c.dead&&!c.parked&&c!==t.from&&Math.hypot(c.x-t.x,c.y-t.y)<c.r+.5){detonate(t,0);break;}}}
