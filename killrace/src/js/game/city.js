@@ -83,7 +83,9 @@ function genCity(seed){
 
 // driving distance to the player for every cell. Cells next to a wall cost more, so cars keep to the lanes
 const HEAP=[];
-function computeCarFlow(){const W=L.W,n=W*L.H,f=L.cflow,start=Math.floor(P.y)*W+Math.floor(P.x);f.fill(1e9);f[start]=0;HEAP.length=0;
+function computeCarFlow(){computeFlowFrom(Math.floor(P.y)*L.W+Math.floor(P.x),L.cflow);}
+// the same field from any cell into any array: race mode keeps one per checkpoint
+function computeFlowFrom(start,f){const W=L.W,n=W*L.H;f.fill(1e9);f[start]=0;HEAP.length=0;
   const push=(c,v)=>{HEAP.push([v,c]);let i=HEAP.length-1;while(i>0){const p=(i-1)>>1;if(HEAP[p][0]<=HEAP[i][0])break;[HEAP[p],HEAP[i]]=[HEAP[i],HEAP[p]];i=p;}};
   const pop=()=>{const top=HEAP[0],last=HEAP.pop();if(HEAP.length){HEAP[0]=last;let i=0;for(;;){const l=i*2+1,r=l+1;let m=i;if(l<HEAP.length&&HEAP[l][0]<HEAP[m][0])m=l;if(r<HEAP.length&&HEAP[r][0]<HEAP[m][0])m=r;if(m===i)break;[HEAP[m],HEAP[i]]=[HEAP[i],HEAP[m]];i=m;}}return top;};
   push(start,0);

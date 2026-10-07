@@ -7,7 +7,7 @@
    ===================================================================== */
 const WAVE={n:0,queue:[],spawnT:0,pause:3,clear:false};
 const BOSSN=['GILA','IGUANA','KOMODO'];
-function newGame(){L=genCity(7);computeCarFlow();
+function newGame(){GAMEMODE='waves';RACE.on=false;L=genCity(7);computeCarFlow();
   for(const[x,y,a,k]of L.parkAt)L.vcars.push(makeCar(k,x,y,a,{parked:true,hp:90,hp0:90}));
   setupPickups(rng(99));resetPlayer();spawnPeds(30,6);
   for(const b of L.blocks)if(b.type==='park')for(let k=0;k<2;k++){const x=b.x0+3+k*5+.5,y=b.y0+6.5;if(!L.block[Math.floor(y)*L.W+Math.floor(x)])L.enemies.push(makeEnemy('dog',x,y,rnd));}

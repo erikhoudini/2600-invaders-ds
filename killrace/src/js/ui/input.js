@@ -8,14 +8,16 @@
 const keys={};let stick={x:0,y:0},firing=false,mouseFire=false,nitroBtn=false;
 const UI_TOUCH=matchMedia('(pointer:coarse)').matches;
 function setBody(m){document.body.className=m;resize();}
-function startOrResume(){audioInit();if(state==='title'||state==='over')newGame();else if(state==='paused')resume();}
+function startMode(){if(TITLE_SEL===1)newRace();else newGame();}
+function startOrResume(){audioInit();if(state==='title')startMode();else if(state==='over'){TITLE_SEL=GAMEMODE==='race'?1:0;startMode();}else if(state==='paused')resume();}
+function titlePick(d){TITLE_SEL=(TITLE_SEL+d+MODES.length)%MODES.length;play('menu',.4,1.3);}
 function pause(){if(state!=='play')return;state='paused';rumbleOn(false);for(const k in keys)keys[k]=false;firing=false;mouseFire=false;}
 function resume(){state='play';rumbleOn(true);}
 function toTitle(){titleInit();}
 addEventListener('keydown',e=>{audioInit();const c=e.code;
   if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Tab'].includes(c))e.preventDefault();
-  if(state==='title'){if(c==='Enter'||c==='Space'||c==='NumpadEnter')newGame();return;}
-  if(state==='over'){if(overT<1)return;if(c==='Enter'||c==='NumpadEnter')newGame();else if(c==='Escape')toTitle();return;}
+  if(state==='title'){if(c==='Enter'||c==='Space'||c==='NumpadEnter')startMode();else if(c==='ArrowUp'||c==='KeyW')titlePick(-1);else if(c==='ArrowDown'||c==='KeyS')titlePick(1);else if(c==='Digit1'){TITLE_SEL=0;startMode();}else if(c==='Digit2'){TITLE_SEL=1;startMode();}return;}
+  if(state==='over'){if(overT<1)return;if(c==='Enter'||c==='NumpadEnter')startOrResume();else if(c==='Escape')toTitle();return;}
   if(state==='paused'){if(c==='Escape'||c==='KeyP'||c==='Enter')resume();else if(c==='KeyQ')toTitle();return;}
   keys[c]=true;if(state!=='play'||e.repeat)return;
   if(c.startsWith('Digit')){const w=+c.slice(5)-1;if(w>=0&&w<3)selectGun(w);}
@@ -25,7 +27,10 @@ addEventListener('keyup',e=>{keys[e.code]=false;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;firing=false;mouseFire=false;nitroBtn=false;stick={x:0,y:0};pause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
 document.addEventListener('contextmenu',e=>e.preventDefault());
-view.addEventListener('pointerdown',e=>{audioInit();if(state!=='play'){if(state!=='over'||overT>1)startOrResume();return;}
+view.addEventListener('pointerdown',e=>{audioInit();
+  // title: the two mode buttons sit at 34-42% and 42-50% of the screen height
+  if(state==='title'){const r=view.getBoundingClientRect(),v=(e.clientY-r.top)/r.height;if(v>.3&&v<.42)TITLE_SEL=0;else if(v>=.42&&v<.52)TITLE_SEL=1;startMode();return;}
+  if(state!=='play'){if(state!=='over'||overT>1)startOrResume();return;}
   if(e.pointerType==='mouse'){if(e.button===2)lockCycle();else mouseFire=true;}});
 addEventListener('mouseup',()=>{mouseFire=false;});
 addEventListener('wheel',e=>{if(state==='play')nextGun();},{passive:true});
@@ -56,5 +61,6 @@ function pollPad(){const pads=navigator.getGamepads?navigator.getGamepads():[];l
   const v=i=>g.buttons[i]?g.buttons[i].value||(g.buttons[i].pressed?1:0):0,b=i=>v(i)>.5,hit=i=>b(i)&&!GP.prev[i];
   const lx=g.axes[0]||0;GP.lx=Math.abs(lx)<.15?0:(lx-Math.sign(lx)*.15)/.85;GP.rt=v(7);GP.lt=v(6);GP.fire=b(0);GP.hand=b(1);GP.boost=b(2);
   if(state==='play'){audioInit();if(hit(4))lockCycle();if(hit(5))nextGun();if(hit(3))dropDrum();if(hit(8))horn();if(hit(9))pause();}
+  else if(state==='title'&&(hit(12)||hit(13)))titlePick(hit(12)?-1:1);
   else if(hit(0)||hit(9))startOrResume();else if(state==='paused'&&hit(1))resume();else if(state==='over'&&hit(1))toTitle();
   GP.prev=[];for(let i=0;i<17;i++)GP.prev[i]=b(i);}

@@ -10,7 +10,7 @@
    ===================================================================== */
 const ROLE={sedanR:'gun',sedanW:'gun',sedanY:'gun',pickup:'gun',cruiser:'ram',bike:'bike'};
 function steerTo(c,tx,ty){const d=angDiff(c.a,Math.atan2(ty-c.y,tx-c.x));return d;}
-function flowTarget(c){const W=L.W,f=L.cflow;let i=Math.floor(c.y)*W+Math.floor(c.x);
+function flowTarget(c,f=L.cflow){const W=L.W;let i=Math.floor(c.y)*W+Math.floor(c.x);
   for(let k=0;k<4;k++){let b=i,bv=f[i];for(const o of[1,-1,W,-W,W+1,W-1,-W+1,-W-1]){const v=f[i+o];if(v<bv&&!L.map[i+o]&&!L.block[i+o]){bv=v;b=i+o;}}if(b===i)break;i=b;}
   return[(i%W)+.5,((i/W)|0)+.5];}
 
@@ -32,6 +32,10 @@ function updAICar(c,dt){
     else{// gunners line up a pass: aim beside the player, not at him
       const side=c.side||(c.side=rnd()<.5?1:-1),off=dist<12?3.5:0;tx=px-dy/dist*off*side;ty=py+dx/dist*off*side;}}
   else[tx,ty]=flowTarget(c);
+  // racers drive the course, and only go for the player when he is right there in front of them
+  if(c.racer){[tx,ty]=flowTarget(c,L.cpField[c.cp]);boost=false;thr=1;
+    if(c.los&&!P.dead&&dist<9&&c.aggro&&Math.abs(angDiff(c.a,toP))<.5){tx=P.x+P.vx*.3;ty=P.y+P.vy*.3;}
+    if(Math.abs(angDiff(c.a,Math.atan2(ty-c.y,tx-c.x)))<.08&&c.nitro>0){boost=true;c.nitro-=dt*30;}else c.nitro=Math.min(100,(c.nitro||0)+dt*6);}
   let da=steerTo(c,tx,ty);
   // feelers: turn away from a wall coming up, unless we are lined up on the player
   if(!c.los||dist>6){const look=Math.min(4,1+sp*.3);const fl=cast(c.x,c.y,Math.cos(c.a-.45),Math.sin(c.a-.45),look),fr=cast(c.x,c.y,Math.cos(c.a+.45),Math.sin(c.a+.45),look);
@@ -40,7 +44,10 @@ function updAICar(c,dt){
   if(Math.abs(da)>1.3&&sp>7){inp.thr=0;inp.brake=.6;}
   // stuck against something: back out, turning the other way
   if(c.stuckT>0){c.stuckT-=dt;inp.thr=0;inp.brake=1;inp.steer=-c.stuckDir;}
-  else{if(sp<1.2)c.stk+=dt;else c.stk=Math.max(0,c.stk-dt*2);if(c.stk>1){c.stk=0;c.stuckT=.7+rnd()*.5;c.stuckDir=Math.sign(da)||1;}}
+  else{if(sp<1.2)c.stk+=dt;else{c.stk=Math.max(0,c.stk-dt*2);if(sp>5)c.stuckN=Math.max(0,(c.stuckN||0)-dt*.3);}
+    if(c.stk>1){c.stk=0;c.stuckN=(c.stuckN||0)+1;c.stuckT=.7+rnd()*.5;
+      // alternate the way we back out, and if that keeps failing, get put back on the road out of sight
+      c.stuckDir=c.stuckN%2?(Math.sign(da)||1):-(Math.sign(da)||1);if(c.stuckN>=3&&(!c.los||dist>12))unstick(c);}}
   stepCar(c,dt,inp);
   // guns
   c.cool-=dt;if(c.burst>0){c.burstT-=dt;if(c.burstT<=0){c.burst--;c.burstT=.11;aiShoot(c,toP,dist);}}
@@ -55,5 +62,10 @@ function aiShoot(c,a,dist,big){a+=(rnd()-.5)*.06;const s=big?13:16;c.fireT=.15;
 function shotsVsCars(){for(let i=L.shots.length-1;i>=0;i--){const s=L.shots[i];
   if(!P.dead&&s.own!==P&&Math.hypot(s.x-P.x,s.y-P.y)<P.r+.05){hurtPlayer(s.dmg,Math.atan2(s.y-P.y,s.x-P.x));L.shots.splice(i,1);continue;}
   for(const c of L.vcars)if(c!==s.own&&!c.dead&&Math.hypot(s.x-c.x,s.y-c.y)<c.r){damageCar(c,s.dmg,null);puff(s.x,s.y);L.shots.splice(i,1);break;}}}
-function updCars(dt){for(const c of L.vcars)updAICar(c,dt);
+function updCars(dt){for(const c of L.vcars)if(!(c.racer&&RACE.count>0))updAICar(c,dt);
   for(let i=L.vcars.length-1;i>=0;i--){const c=L.vcars[i];if(c.wreck&&c.wreckT<=0){L.vcars.splice(i,1);L.things.push({t:'deco',x:c.x,y:c.y,d:dec('DEBRIS')});stainFloor(c.x,c.y,.9,3);}}}
+// a car that cannot get itself free is moved to the best nearby open lane, pointing the way it wants to go
+function unstick(c){const W=L.W,f=c.racer?L.cpField[c.cp]:L.cflow,cx=Math.floor(c.x),cy=Math.floor(c.y);let best=-1,bv=1e9;
+  for(let y=cy-8;y<=cy+8;y++)for(let x=cx-8;x<=cx+8;x++){if(x<1||y<1||x>=W-1||y>=L.H-1)continue;const i=y*W+x;if(!L.wide[i]||L.block[i])continue;
+    if(L.vcars.some(o=>o!==c&&Math.hypot(o.x-x-.5,o.y-y-.5)<1.6))continue;const v=f[i]+Math.hypot(x-cx,y-cy)*2;if(v<bv){bv=v;best=i;}}
+  if(best<0)return;c.x=(best%W)+.5;c.y=((best/W)|0)+.5;c.vx=c.vy=0;c.stuckN=0;c.stuckT=0;const[tx,ty]=flowTarget(c,f);c.a=Math.atan2(ty-c.y,tx-c.x);}

@@ -25,8 +25,8 @@ function onOil(c){return L.oil[Math.floor(c.y)*L.W+Math.floor(c.x)];}
 // input: thr 0..1, brake 0..1 (reverses once stopped), steer -1..1, hand (handbrake), boost
 function stepCar(c,dt,inp){const K=c.K,ca=Math.cos(c.a),sa=Math.sin(c.a);
   let fwd=c.vx*ca+c.vy*sa,lat=-c.vx*sa+c.vy*ca;
-  const top=K.top*(inp.boost?1.45:1)*(c.rage?1.15:1);
-  if(inp.thr>0&&fwd<top)fwd+=K.acc*inp.thr*(inp.boost?1.7:1)*dt;
+  const tm_=c.tmul||1,top=K.top*tm_*(inp.boost?1.45:1)*(c.rage?1.15:1);
+  if(inp.thr>0&&fwd<top)fwd+=K.acc*tm_*inp.thr*(inp.boost?1.7:1)*dt;
   if(inp.brake>0){if(fwd>.6)fwd-=K.acc*2*inp.brake*dt;else if(fwd>-K.top*.35)fwd-=K.acc*.7*inp.brake*dt;}
   fwd-=fwd*(inp.thr>0||inp.brake>0?.25:.9)*dt;if(fwd>top)fwd-=(fwd-top)*Math.min(1,dt*2);
   const oil=onOil(c),sp=Math.abs(fwd);
@@ -42,7 +42,10 @@ function stepCar(c,dt,inp){const K=c.K,ca=Math.cos(c.a),sa=Math.sin(c.a);
   moveCar(c,dt);}
 
 // slide along walls and props. Hard hits hurt, and a car that hits a fuel drum at speed sets it off
-function moveCar(c,dt){const steps=Math.max(1,Math.ceil(speedOf(c)*dt/.2)),sdt=dt/steps;
+// a car-to-car shove can push a car into a wall, and then every move tests as blocked: ease it back out first
+function unembed(c){if(!blockedAt(c.x,c.y,c.r))return;
+  for(let d=.05;d<1.5;d+=.05)for(let k=0;k<8;k++){const a=k*Math.PI/4,x=c.x+Math.cos(a)*d,y=c.y+Math.sin(a)*d;if(!blockedAt(x,y,c.r)){c.x=x;c.y=y;return;}}}
+function moveCar(c,dt){unembed(c);const steps=Math.max(1,Math.ceil(speedOf(c)*dt/.2)),sdt=dt/steps;
   for(let k=0;k<steps;k++){
     const nx=c.x+c.vx*sdt;if(!blockedAt(nx,c.y,c.r))c.x=nx;else{wallHit(c,Math.abs(c.vx),Math.sign(c.vx),0);c.vx*=-.3;}
     const ny=c.y+c.vy*sdt;if(!blockedAt(c.x,ny,c.r))c.y=ny;else{wallHit(c,Math.abs(c.vy),0,Math.sign(c.vy));c.vy*=-.3;}}}
@@ -51,10 +54,10 @@ function wallHit(c,imp,sx,sy){
   const W=L.W,hx=Math.floor(c.x+sx*(c.r+.1)),hy=Math.floor(c.y+sy*(c.r+.1)),i=hy*W+hx;
   if(L.block[i]){const t=L.things.find(t=>t.cell===i||(t.blk&&Math.floor(t.x)===hx&&Math.floor(t.y)===hy));
     if(t&&t.boom&&imp>3){if(c===P)t.byP=1;detonate(t,0);}}
-  if(imp<5.5)return;
-  const dmg=(imp-5.5)*2.2;
+  if(imp<6.5)return;
+  const dmg=(imp-6.5)*2;
   for(let k=0;k<6;k++)addPart(c.x+sx*c.r,c.y+sy*c.r,.3+rnd()*.3,(rnd()-.5)*2-sx*2,(rnd()-.5)*2-sy*2,1+rnd()*2,[255,220,120],.012,.3,3);
-  if(c===P){if(!(P.berserk>0))hurtPlayer(dmg*.45,undefined,'walls');P.bump=Math.min(8,imp*.6);shake=Math.max(shake,Math.min(.9,imp/14));play('thud',Math.min(1,imp/12),.55);play('empty',.4,.7,.05);}
+  if(c===P){if(!(P.berserk>0))hurtPlayer(dmg*.4,undefined,'walls');P.bump=Math.min(8,imp*.6);shake=Math.max(shake,Math.min(.9,imp/14));play('thud',Math.min(1,imp/12),.55);play('empty',.4,.7,.05);}
   else{damageCar(c,dmg,null);const d=Math.hypot(c.x-P.x,c.y-P.y);if(d<16)play('thud',Math.max(.1,.6-d/30),.6,.08);}}
 
 // car against car: push apart, trade momentum, and the faster side of the hit deals the damage

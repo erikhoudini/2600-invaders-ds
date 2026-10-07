@@ -34,6 +34,7 @@ function krSprites(){lockBox=null;const list=[],far=48*48;
     else if(k==='t'){if(o.t==='tree')drawSprite(TREES,o.ti*64,0,64,128,o.x,o.y,2.6);
       else if(o.t==='item'){const pow=PICKS[o.kind]&&PICKS[o.kind].big,bob=.14+.06*Math.sin(tm*3.2+o.x*1.7);
         drawSprite(DECO,o.d*64,0,64,64,o.x,o.y,pow?1.3:1.1,false,false,pow?(((tm*5)|0)&1?C_W:C_C):C_K,bob);}
+      else if(o.cp!==undefined)drawSprite(DECO,o.d*64,0,64,64,o.x,o.y,1.5,false,false,o.cp===P.cp?(((tm*6)|0)&1?C_Y:C_W):null);
       else drawSprite(DECO,o.d*64,0,64,64,o.x,o.y,o.d===DCAN?1.5:1,o===P.lock,false,o.boom?C_K:null);}
     else if(k==='p'){if(o.gib){drawSprite(DECO,o.corpse*64,0,64,64,o.x,o.y,1);continue;}const[fx,fy]=enemyFrame(o);drawSprite(SHEET[o.sh],fx,fy,64,64,o.x,o.y,o.sc,false,false,o.st==='dead'?null:C_K);}
     else if(k==='e'){if(o.gib){drawSprite(DECO,o.corpse*64,0,64,64,o.x,o.y,1);continue;}if(o.dog){drawDog(o);continue;}

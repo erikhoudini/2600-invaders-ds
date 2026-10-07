@@ -22,7 +22,7 @@ function feed(t,c=C_W){msgs.unshift({t,time:2.4,c});if(msgs.length>3)msgs.length
 const money=v=>'$'+Math.round(v).toLocaleString('en-US');
 
 // best run, kept between sessions
-let BEST={score:0,wave:0};try{Object.assign(BEST,JSON.parse(localStorage.getItem('killrace.best')||'{}'));}catch(e){}
+let BEST={score:0,wave:0,race:0};try{Object.assign(BEST,JSON.parse(localStorage.getItem('killrace.best')||'{}'));}catch(e){}
 function saveBest(){try{localStorage.setItem('killrace.best',JSON.stringify(BEST));}catch(e){}}
 
 // kills inside three seconds of each other chain. Every kill pays its base value times the chain;

@@ -5,7 +5,7 @@
    Bagman's flatbed level is pitched to the speedometer.
    ===================================================================== */
 function resetPlayer(){Object.assign(P,{K:CARK.player,mass:CARK.player.mass,r:.55,x:L.sx,y:L.sy,a:L.sa,vx:0,vy:0,hp:100,maxHp:100,armor:0,lock:null,lockLost:0,hurt:0,flash:0,dead:0,
-  berserk:0,slow:0,flame:0,rage:false,w:0,has:[1,0,0],s:0,d:0,drums:2,nitro:100,boosting:0,cool:0,anim:null,recoil:0,score:0,chain:0,chainT:0,kills:0,peds:0,foot:0,bump:0,hornT:0,fov:.66,time:0,dmgBy:{}});setDir();}
+  berserk:0,slow:0,flame:0,rage:false,w:0,has:[1,0,0],s:0,d:0,drums:2,nitro:100,boosting:0,cool:0,anim:null,recoil:0,score:0,chain:0,chainT:0,kills:0,peds:0,foot:0,bump:0,hornT:0,fov:.66,time:0,dmgBy:{},cp:0,lap:1,fin:0,newRace:0});setDir();}
 
 function driveInput(){const K_=c=>!!keys[c];
   let thr=(K_('KeyW')||K_('ArrowUp'))?1:0,brake=(K_('KeyS')||K_('ArrowDown'))?1:0,steer=(K_('KeyD')||K_('ArrowRight')?1:0)-(K_('KeyA')||K_('ArrowLeft')?1:0);
@@ -20,7 +20,7 @@ function updPlayer(rdt){if(P.dead)return;P.time+=rdt;
   if(P.slow>0){P.slow-=rdt;CRT.slow=Math.min(1,P.slow/1.5);timeScaleAudio=.6;if(P.slow<=0){P.slow=0;CRT.slow=0;timeScaleAudio=1;}}
   if(muff&&AC)muff.frequency.setTargetAtTime(P.slow>0?1400:20000,AC.currentTime,.15);
   CRT.low=P.hp<=25?(1-P.hp/25)*.8+.2:0;P.rage=P.berserk>0;
-  const inp=driveInput();
+  const inp=RACE.on&&RACE.count>0?{thr:0,brake:0,steer:0}:driveInput();
   if(inp.boost){P.nitro=Math.max(0,P.nitro-32*rdt);if(!P.boosting)play('power',.35,1.6);P.boosting=1;}else{P.boosting=0;P.nitro=Math.min(100,P.nitro+9*rdt);}
   stepCar(P,rdt,inp);
   const sp=speedOf(P);P.mvx=P.vx;P.mvy=P.vy;

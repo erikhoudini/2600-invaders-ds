@@ -23,6 +23,7 @@ function radar(){const R=26,cx=SW-R-4,cy=R+4,sc=.8,W=L.W;
   for(const sp of L.pick)if(sp.item&&PICKS[sp.kind].big)dot(sp.x,sp.y,C_C,2);
   for(const e of L.enemies)if(e.st!=='dead'&&e.st!=='dying'&&e.st!=='idle')dot(e.x,e.y,C_Y,1);
   for(const c of L.vcars)if(!c.dead&&!c.parked)dot(c.x,c.y,c.boss?(((tm*6)|0)&1?C_Y:C_R):C_R,c.boss?4:3);
+  if(RACE.on&&!P.fin){const[x,y]=RACE.cps[P.cp];if(((tm*4)|0)&1)dot(x,y,C_Y,4);}
   put(cx,cy-2,C_W);rect(cx-1,cy-1,3,1,C_W);rect(cx-2,cy,5,1,C_W);}
 
 function overlayKR(){
@@ -36,6 +37,7 @@ function overlayKR(){
   const alive=L.vcars.filter(c=>!c.dead&&!c.parked).length+WAVE.queue.length;let ty=3;
   const boss=L.vcars.find(c=>c.boss&&!c.dead);
   if(boss){rect(0,0,SW-60,12,C_K);text(boss.name,4,3,C_R);const bw=SW-60-80;rect(70,3,bw,6,C_DR);rect(70,3,Math.round(bw*Math.max(0,boss.hp)/boss.hp0),6,C_R);ty=15;}
+  else if(RACE.on){const s=RACE.count>0?'GET READY':'LAP '+Math.min(P.lap,RACE.laps)+'/'+RACE.laps+'  POS '+RACE.pos+'/'+(1+L.vcars.filter(c=>c.racer&&!c.dead).length)+'  '+fmtTime(RACE.t);text(s,4,ty,C_Y,1,C_K);ty+=11;raceArrow();}
   else if(WAVE.n){text(WAVE.clear?'WAVE '+WAVE.n+' CLEAR':'WAVE '+WAVE.n+'  CARS '+alive,4,ty,WAVE.clear?C_G:C_Y,1,C_K);ty+=11;}
   if(P.berserk>0){text('RAMPAGE '+Math.ceil(P.berserk),4,ty+2,((tm*6)|0)&1?C_R:C_Y,1,C_K);ty+=11;}
   if(P.slow>0){text('SLO-MO '+Math.ceil(P.slow),4,ty+2,C_C,1,C_K);ty+=11;}
@@ -45,3 +47,9 @@ function overlayKR(){
   if(big.time>0)textC(big.t,52,big.c,textW(big.t,2)>SW-8?1:2,C_K);
   const fy=VH-46;for(let i=0;i<msgs.length;i++)textC(msgs[i].t,fy-i*10,msgs[i].c,1,C_K);
   if(combo.time>0){const sc=Math.min(2,fitScale(combo.t,SW-6)),c=((tm*10)|0)&1?(combo.n>=10?C_R:C_Y):C_W;textC(combo.t,74,c,sc,C_K);}}
+
+// a fat arrow at the top of the screen pointing at the next checkpoint
+function raceArrow(){if(P.fin)return;const[x,y]=RACE.cps[P.cp],a=angDiff(P.a,Math.atan2(y-P.y,x-P.x)),cx=CX,cy=26,s=Math.sin(a),c=Math.cos(a);
+  const col=((tm*4)|0)&1?C_Y:C_W;for(let k=-9;k<=7;k++)for(let w=-1;w<=1;w++){put(Math.round(cx+s*k+c*w),Math.round(cy-c*k+s*w),col);}
+  for(let k=0;k<6;k++)for(const sd of[-1,1]){const bx=cx+s*(7-k)+c*sd*k,by=cy-c*(7-k)+s*sd*k;put(Math.round(bx),Math.round(by),col);put(Math.round(bx),Math.round(by)+1,col);}
+  const d=Math.round(Math.hypot(x-P.x,y-P.y));text(d+'M',cx+14,cy-3,C_W,1,C_K);}

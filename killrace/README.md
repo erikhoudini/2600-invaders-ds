@@ -16,6 +16,18 @@ node tools/build.mjs killrace     # -> dist/killrace.html, open it in a browser
 Add `#debug` to the URL (`dist/killrace.html#debug`) to get `window.KR` in the
 console. The tests use it to place cars and read game state.
 
+## Modes
+
+- **Waves.** The Geckos send cars at you in waves. Survive as long as you can.
+- **Race.** Three laps of eight checkpoints around the town against five armed
+  racers. Each checkpoint is a gate of burning barrels; the next one flashes,
+  blinks on the radar, and has an arrow and distance at the top of the screen.
+  Racers shoot and ram. Wreck one and he's out; wreck all five and you win
+  as the last car driving. Prize money by finishing place; best winning time
+  is saved.
+
+Pick the mode on the title screen (up/down, or 1/2, or tap it).
+
 ## Controls
 
 | Keyboard | Pad | Touch | |
@@ -128,7 +140,7 @@ No new art or sound files were made. OpenGameArt wasn't needed.
 - **Enemy cars only target you.** They don't fight each other, though their
   bullets and explosions do hurt each other.
 - **No music.** Bagman has none either: beeper effects and ambience only.
-- **Ideas:** checkpoint races and time trials on the same streets (the
-  "race" in Kill Race), a pedestrian bounty mode, more maps from Bagman's
+- **Ideas:** time trials on the race course, more race routes, a pedestrian
+  bounty mode, more maps from Bagman's
   level editor format, two-player split screen (the renderer is
   320×200, so two views fit).

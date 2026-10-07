@@ -51,6 +51,7 @@ js/game/ai-cars.js
 js/game/peds.js
 js/game/pickups.js
 js/game/waves.js
+js/game/race.js
 js/render/walls.js
 js/render/scene.js
 js/render/hud.js
