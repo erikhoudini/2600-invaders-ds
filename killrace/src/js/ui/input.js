@@ -9,11 +9,11 @@ const keys={};let stick={x:0,y:0},firing=false,mouseFire=false,nitroBtn=false;
 const UI_TOUCH=matchMedia('(pointer:coarse)').matches;
 function setBody(m){document.body.className=m;resize();}
 function startMode(){GAMEMODE=TITLE_SEL===1?'race':'waves';garageOpen();}
-function launch(){PCAR=GARAGE[GSEL];if(GAMEMODE==='race')newRace();else newGame();}
+function launch(){PCAR=GARAGE[GSEL];loopsOff();if(GAMEMODE==='race')newRace();else newGame();musicFor(GAMEMODE);}
 function garagePick(d){const n=clamp(GSEL+d,0,GARAGE.length-1);if(n!==GSEL){GSEL=n;play('menu',.4,1.3);}}
 function startOrResume(){audioInit();if(state==='title')startMode();else if(state==='over'||state==='garage')launch();else if(state==='paused')resume();}
 function titlePick(d){TITLE_SEL=(TITLE_SEL+d+MODES.length)%MODES.length;play('menu',.4,1.3);}
-function pause(){if(state!=='play')return;state='paused';rumbleOn(false);for(const k in keys)keys[k]=false;firing=false;mouseFire=false;}
+function pause(){if(state!=='play')return;state='paused';rumbleOn(false);loopsOff();for(const k in keys)keys[k]=false;firing=false;mouseFire=false;}
 function resume(){state='play';rumbleOn(true);}
 function toTitle(){titleInit();}
 addEventListener('keydown',e=>{audioInit();const c=e.code;
@@ -23,8 +23,8 @@ addEventListener('keydown',e=>{audioInit();const c=e.code;
   if(state==='over'){if(overT<1)return;if(c==='Enter'||c==='NumpadEnter')startOrResume();else if(c==='Escape')toTitle();return;}
   if(state==='paused'){if(c==='Escape'||c==='KeyP'||c==='Enter')resume();else if(c==='KeyQ')toTitle();return;}
   keys[c]=true;if(state!=='play'||e.repeat)return;
-  if(c.startsWith('Digit')){const w=+c.slice(5)-1;if(w>=0&&w<3)selectGun(w);}
-  if(c==='KeyQ')nextGun();if(c==='KeyE')lockCycle();if(c==='KeyB')dropDrum();if(c==='KeyH')horn();if(c==='KeyR')buyRepair();if(c==='KeyT')buyRecover();
+  if(c.startsWith('Digit')){const w=+c.slice(5)-1;if(w>=0&&w<4)selectGun(w);}
+  if(c==='KeyQ')nextGun();if(c==='KeyE')lockCycle();if(c==='KeyB')dropDrum();if(c==='KeyH')horn();if(c==='KeyR')buyRepair();if(c==='KeyT')buyRecover();if(c==='KeyM')musicToggle();
   if(c==='Escape'||c==='KeyP')pause();});
 addEventListener('keyup',e=>{keys[e.code]=false;});
 addEventListener('blur',()=>{for(const k in keys)keys[k]=false;firing=false;mouseFire=false;nitroBtn=false;stick={x:0,y:0};pause();});

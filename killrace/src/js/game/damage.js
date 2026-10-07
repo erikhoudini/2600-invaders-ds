@@ -11,19 +11,21 @@ function hurtPlayer(dmg,fromAng,src){if(state!=='play'||P.dead)return;P.dmgBy[sr
   P.hp-=dmg;P.hurt=Math.max(P.hurt,.25);CRT.hit=Math.max(CRT.hit,clamp(dmg/16,.15,1));shake=Math.max(shake,Math.min(.6,dmg/14));borderFlash=.15;borderFlashIdx=10;
   if(dmg>=2)play('empty',.5,1.6+rnd()*.5,.04);
   if(P.hp<=0)wreckPlayer();}
-function wreckPlayer(){P.hp=0;P.dead=1;state='wrecked';deathT=0;P.lock=null;SFX.pdie();kaboom(P.x,P.y,true,false,true);CRT.hit=1;bigMsg('WRECKED',3,C_R);rumbleOn(false);}
+function wreckPlayer(){P.hp=0;P.dead=1;state='wrecked';deathT=0;P.lock=null;SFX.pdie();kaboom(P.x,P.y,true,false,true);CRT.hit=1;bigMsg('WRECKED',3,C_R);rumbleOn(false);loopsOff();}
 
 function damageCar(c,dmg,by,ang){if(c.dead||dmg<=0)return;c.hp-=dmg;c.flash=.07;if(by===P){c.lastP=tm;if(c.racer||!c.traffic)c.angry=Math.max(c.angry||0,5);if(c.traffic)c.panic=4;}
   if(c.parked&&!c.awake&&c.hp<c.hp0*.5)c.awake=1;
   if(c.hp<=0)wreckCar(c);}
 // a car that dies goes up, leaves a burning shell that still blocks the road for a while, and pays out if we did it
-function wreckCar(c){c.dead=1;c.wreck=1;c.wreckT=12;c.vx*=.4;c.vy*=.4;c.burn=1;
+function wreckCar(c){c.dead=1;c.wreck=1;c.wreckT=12;c.vx*=.4;c.vy*=.4;c.burn=1;airLaunch(c,(c.parked?3:4.5)+rnd()*2/c.mass,(rnd()-.5)*5);
   const byP=tm-c.lastP<4;kaboom(c.x,c.y,true,byP,false,.45);
   if(P.lock===c)P.lock=null;if(!byP)return;
   if(c.parked){P.score+=250;feed('+$250 PARKED CAR',C_GR);return;}
   if(c.traffic){P.score+=300;feed('+$300 CIVILIAN',C_GR);addTime(2);return;}
   // Burnout's takedown: a car you rammed in the last couple of seconds counts double, and fills the nitro
-  const td=tm-(c.lastRam||-9)<2.5;if(td)P.nitro=100;
+  const td=tm-(c.lastRam||-9)<2.5;if(td){P.nitro=100;P.slow=Math.max(P.slow,.45);}
+  // shot or rammed while flying
+  const air=(P.z||0)>.4;if(air){P.score+=750;feed('AIRSTRIKE +$750',C_Y);}
   P.kills++;const m=chainKill(),v=(c.K.score+(td?500:0))*(c.boss?5:1)*m;P.score+=v;addTime(td?10:7);
   feed('+'+money(v)+(td?' TAKEDOWN':''),C_C);
   if(c.boss)bigMsg((td?'TAKEDOWN! ':'')+c.name+' IS DEAD',2.6,C_R);
@@ -45,8 +47,8 @@ function kaboom(x,y,big,byP,self,pk=1){const R=big?3.6:2.8,DMG=big?160:115;
   for(let k=0;k<18;k++){const a=rnd()*TAU,sp=.3+rnd()*1.2;addPart(x,y,.5+rnd()*.5,Math.cos(a)*sp,Math.sin(a)*sp,.4,[80,80,80],.07+rnd()*.06,1.4+rnd(),4);}
   for(let k=0;k<26;k++){const a=rnd()*TAU,sp=4+rnd()*6;addPart(x,y,.3+rnd()*.5,Math.cos(a)*sp,Math.sin(a)*sp,1+rnd()*2,[170,170,180],.015,.9,3);}
   for(const c of L.vcars){if(c.dead)continue;const d=Math.hypot(c.x-x,c.y-y);if(d>R+c.r)continue;const k=1-Math.min(1,d/(R+c.r));
-    if(byP)c.lastP=tm;damageCar(c,DMG*k+15,byP?P:null);const a=Math.atan2(c.y-y,c.x-x),push=10*k/c.mass;c.vx+=Math.cos(a)*push;c.vy+=Math.sin(a)*push;}
-  if(!self&&!P.dead){const d=Math.hypot(P.x-x,P.y-y);if(d<R+P.r){const k=1-d/(R+P.r);hurtPlayer(Math.round((44*k+6)*pk),Math.atan2(y-P.y,x-P.x),'blast');const a=Math.atan2(P.y-y,P.x-x);P.vx+=Math.cos(a)*8*k;P.vy+=Math.sin(a)*8*k;P.bump=8;}}
+    if(byP)c.lastP=tm;damageCar(c,DMG*k+15,byP?P:null);const a=Math.atan2(c.y-y,c.x-x),push=10*k/c.mass;c.vx+=Math.cos(a)*push;c.vy+=Math.sin(a)*push;if(!c.parked&&k>.25)airLaunch(c,7*k/c.mass,(rnd()-.5)*6*k);}
+  if(!self&&!P.dead){const d=Math.hypot(P.x-x,P.y-y);if(d<R+P.r){const k=1-d/(R+P.r);hurtPlayer(Math.round((44*k+6)*pk),Math.atan2(y-P.y,x-P.x),'blast');const a=Math.atan2(P.y-y,P.x-x);P.vx+=Math.cos(a)*8*k;P.vy+=Math.sin(a)*8*k;P.bump=8;if(k>.3)airLaunch(P,5*k/P.mass,(rnd()-.5)*2*k);}}
   const kw=byP;for(const e of L.enemies){if(e.st==='dead'||e.st==='dying')continue;const d=Math.hypot(e.x-x,e.y-y);if(d<R*1.2)hurtFoot(e,DMG*(1-d/(R*1.2))+10,Math.atan2(e.y-y,e.x-x),.8,kw);}
   for(const p of L.peds){if(p.st==='dead'||p.st==='dying')continue;const d=Math.hypot(p.x-x,p.y-y);if(d<R*1.2)killPed(p,Math.atan2(p.y-y,p.x-x),d<R*.7,kw);}
   for(const o of L.things)if(o.boom&&o.fuse===undefined&&Math.hypot(o.x-x,o.y-y)<R){if(byP)o.byP=1;detonate(o,.12+rnd()*.15);}

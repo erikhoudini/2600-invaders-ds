@@ -55,7 +55,7 @@ car in the garage (left/right, Enter to go, Esc to go back):
 | R | | | repair, $1000 for +30 |
 | T | | | recover: back onto the road, $500 |
 | E, right click | LB | Lock | lock on; guns swing up to ~25° onto the target |
-| Q, 1–3, wheel | RB | Gun | twin AK / pump / dynamite |
+| Q, 1–4, wheel | RB | Gun | twin AK / pump / dynamite / rockets |
 | B | Y | Drum | drop a fuel drum behind you as a mine |
 | H | Back | Horn | horn; pedestrians scatter |
 | Esc / P | Start | Menu | pause |
@@ -80,8 +80,20 @@ car in the garage (left/right, Enter to go, Esc to go back):
 
   Sliding leaves tyre marks on the road. Nitro widens the field of view.
   Hard wall hits hurt and jolt the horizon.
+- **Air.** Cars have height. Stepped plank kickers sit on the roads: ten
+  around town, and one on most legs of the race course. They throw you as far
+  as your speed allows. Explosions throw cars up and spin them, and a wrecked
+  car goes up on its own fireball. In the air there's no grip. Landing hard
+  hurts, and landing on another car crushes it. Air time pays cash and
+  nitro, and wrecking a car while you're airborne is an AIRSTRIKE bonus.
+  Cars at different heights pass over each other.
+- **Homing rockets** (Twisted Metal). They home on your lock, or on the
+  nearest target ahead. Ammo comes from the clip pickups. Rival racers and
+  bosses fire them back now and then, with an INCOMING ROCKET warning and a
+  red blip on the radar. Turn hard to shake one off.
 - **Takedowns** (from Burnout 3). Wreck a car within 2.5 s of ramming it for a
-  TAKEDOWN: full nitro, a cash bonus and +10 s on the race clock. A racer you
+  TAKEDOWN: full nitro, a cash bonus, a beat of slow motion and +10 s on
+  the race clock. A racer you
   hit gets angry and comes after you for a few seconds; his outline flashes
   red and he blinks on the radar.
 - **Gun heat** (from Vigilante 8). The twin AK overheats if you hold the

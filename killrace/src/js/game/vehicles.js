@@ -29,14 +29,14 @@ const CARK={
   reefer: {front:3,hp:420,acc:5.5,top:10.5,brake:5.6,steer:.5,wb:2,grip:10,drag:0.0098,mass:3.2,gun:null,score:3000,r:.85,ram:1}};
 function makeCar(kind,x,y,a,o){const K=CARK[kind];return Object.assign({kind,K,wheel:0,gear:1,x,y,a,vx:0,vy:0,hp:K.hp,hp0:K.hp,r:K.r||.55,mass:K.mass,
   steer:0,cool:1+rnd()*1.5,fireT:0,flash:0,burn:0,dead:0,wreckT:0,lt:0,los:false,stk:0,stuckT:0,stuckDir:1,
-  name:LIZ[Math.floor(rnd()*LIZ.length)],lastP:-99,sc:1},o||{});}
+  name:LIZ[Math.floor(rnd()*LIZ.length)],lastP:-99,sc:1,z:0,vz:0},o||{});}
 const fwdSpeed=c=>c.vx*Math.cos(c.a)+c.vy*Math.sin(c.a);
 const speedOf=c=>Math.hypot(c.vx,c.vy);
 function onOil(c){return L.oil[Math.floor(c.y)*L.W+Math.floor(c.x)];}
 
 // input: thr 0..1, brake 0..1 (reverses once stopped and held), steer -1..1, hand (handbrake), boost
 const GEARS=[.22,.42,.62,.82,1.01];
-function stepCar(c,dt,inp){const K=c.K,ca=Math.cos(c.a),sa=Math.sin(c.a),tm_=c.tmul||1;
+function stepCar(c,dt,inp){if(airStep(c,dt))return;const K=c.K,ca=Math.cos(c.a),sa=Math.sin(c.a),tm_=c.tmul||1;
   let fwd=c.vx*ca+c.vy*sa,lat=-c.vx*sa+c.vy*ca;const sp=Math.abs(fwd);
   const top=K.top*tm_*(inp.boost?1.35:1)*(c.rage?1.12:1);
   // the steering wheel takes time to turn, comes back quicker, and has less lock the faster you go
@@ -66,7 +66,7 @@ function stepCar(c,dt,inp){const K=c.K,ca=Math.cos(c.a),sa=Math.sin(c.a),tm_=c.t
   // rubber on the road when sliding, scrubbing or locking up
   c.skid=c.slip>1.4||(inp.brake>0&&fwd>7)||(c.under&&sp>8)||(hand&&sp>5);
   if(c.skid&&!c.dead){const nx=-sa,ny=ca;for(const s of[-.32,.32])stainFloor(c.x-ca*.6+nx*s,c.y-sa*.6+ny*s,.045,3);}
-  moveCar(c,dt);}
+  const ox=c.x,oy=c.y;moveCar(c,dt);rampCheck(c,ox,oy);}
 
 // slide along walls and props. Hard hits hurt, and a car that hits a fuel drum at speed sets it off
 // a car-to-car shove can push a car into a wall, and then every move tests as blocked: ease it back out first
@@ -84,13 +84,15 @@ function wallHit(c,imp,sx,sy){
   if(imp<6.5)return;
   const dmg=(imp-6.5)*2;
   for(let k=0;k<6;k++)addPart(c.x+sx*c.r,c.y+sy*c.r,.3+rnd()*.3,(rnd()-.5)*2-sx*2,(rnd()-.5)*2-sy*2,1+rnd()*2,[255,220,120],.012,.3,3);
-  if(c===P){if(!(P.berserk>0))hurtPlayer(dmg*.4,undefined,'walls');P.bump=Math.min(8,imp*.6);shake=Math.max(shake,Math.min(.9,imp/14));play('thud',Math.min(1,imp/12),.55);play('empty',.4,.7,.05);}
-  else{damageCar(c,dmg,null);const d=Math.hypot(c.x-P.x,c.y-P.y);if(d<16)play('thud',Math.max(.1,.6-d/30),.6,.08);}}
+  if(c===P){if(!(P.berserk>0))hurtPlayer(dmg*.4,undefined,'walls');P.bump=Math.min(8,imp*.6);shake=Math.max(shake,Math.min(.9,imp/14));crashSnd(Math.min(1,imp/12),imp>10);}
+  else{damageCar(c,dmg,null);const d=Math.hypot(c.x-P.x,c.y-P.y);if(d<16)crashSnd(Math.max(.1,.6-d/30),imp>10);}}
 
 // car against car: push apart, trade momentum, and the faster side of the hit deals the damage
 function carCollisions(){const all=[P,...L.vcars];
   for(let a=0;a<all.length;a++)for(let b=a+1;b<all.length;b++){const A=all[a],B=all[b];if(A===P&&P.dead)continue;
     const dx=B.x-A.x,dy=B.y-A.y,d=Math.hypot(dx,dy),rr=A.r+B.r;if(d>=rr||d<1e-4)continue;
+    // one car in the air goes over the other
+    if(Math.abs((A.z||0)-(B.z||0))>.4)continue;
     const nx=dx/d,ny=dy/d,ma=A.parked||A.wreck?1e9:A.mass,mb=B.parked||B.wreck?1e9:B.mass;const over=rr-d,ia=1/ma,ib=1/mb;
     A.x-=nx*over*ia/(ia+ib);A.y-=ny*over*ia/(ia+ib);B.x+=nx*over*ib/(ia+ib);B.y+=ny*over*ib/(ia+ib);
     const vn=(B.vx-A.vx)*nx+(B.vy-A.vy)*ny;if(vn>=0)continue;
@@ -103,4 +105,4 @@ function carCollisions(){const all=[P,...L.vcars];
       else{const mine=atk===P&&into>2;if(mine){vic.lastRam=tm;vic.angry=8;P.nitro=Math.min(100,P.nitro+imp*2.5);}damageCar(vic,imp*k*(mine?(P.berserk>0?7:3.2)*(P.K.ram?1.3:1)*P.mass/1.2:1.5),mine?P:null);}};
     hit(A,B,aIn>bIn?1:.45,aIn);hit(B,A,bIn>=aIn?1:.45,bIn);
     const mx=(A.x+B.x)/2,my=(A.y+B.y)/2;for(let k=0;k<10;k++)addPart(mx,my,.35+rnd()*.3,(rnd()-.5)*4,(rnd()-.5)*4,1+rnd()*2,[255,230,140],.012,.35,3);
-    const v=Math.max(.15,1-Math.hypot(mx-P.x,my-P.y)/25);play('thud',v,.45);play('empty',v*.7,.6,.03);if(A===P||B===P){CRT.hit=Math.max(CRT.hit,Math.min(.8,imp/14));shake=Math.max(shake,Math.min(1.1,imp/10));}}}
+    const v=Math.max(.15,1-Math.hypot(mx-P.x,my-P.y)/25);crashSnd(v,imp>6);if(A===P||B===P){CRT.hit=Math.max(CRT.hit,Math.min(.8,imp/14));shake=Math.max(shake,Math.min(1.1,imp/10));}}}

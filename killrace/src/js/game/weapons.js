@@ -9,10 +9,11 @@
 const GUNS=[
   {name:'TWIN AK',spr:'wTommy',rate:.075,seq:[1,2],ft:.035},
   {name:'PUMP 12',spr:'wShotgun',rate:.72,seq:[1,2,3,4],ft:.1,ammo:'s'},
-  {name:'DYNAMITE',spr:'wDyn',rate:.85,seq:[1,2,2,2],ft:.08,ammo:'d'}];
+  {name:'DYNAMITE',spr:'wDyn',rate:.85,seq:[1,2,2,2],ft:.08,ammo:'d'},
+  {name:'ROCKETS',spr:'wSniper',rate:.45,seq:[1,2],ft:.08,ammo:'m'}];
 const FLAMER={name:'FLAMER',spr:'wFlame',rate:.05,seq:[2,3],ft:.05};
 const gunNow=()=>P.flame>0?FLAMER:GUNS[P.w];
-const ammoLeft=w=>w===1?P.s:w===2?P.d:Infinity;
+const ammoLeft=w=>w===1?P.s:w===2?P.d:w===3?P.m:Infinity;
 const LOCK_CONE=.7,LOCK_RANGE=34,AIM_SWING=.45;
 
 /* ---------- lock-on ---------- */
@@ -36,8 +37,9 @@ function tryFire(){if(P.cool>0||P.dead)return;const g=gunNow();
   P.cool=g.rate;P.anim={i:0,t:0};const a=aimAngle(),locked=lockOK(P.lock);
   if(P.w===0){if(P.hot){P.cool=.12;return;}P.heat+=.05;if(P.heat>=1){P.hot=1;feed('GUNS OVERHEATED',C_R);play('empty',.6,.7);}SFX.tommy();P.flash=.05;P.recoil=3;shake=Math.max(shake,.12);ray(a+(rnd()-.5)*(locked?.016:.035),45,7,11,.2);}
   else if(P.w===1){P.s--;SFX.shotgun();P.flash=.07;P.recoil=10;shake=Math.max(shake,.5);for(let k=0;k<9;k++)ray(a+(rnd()-.5)*.15,24,7,13,.35);}
-  else{P.d--;throwDyn(a,false);}
-  borderFlash=.04;borderFlashIdx=P.w===1?14:15;gunNoise();}
+  else if(P.w===2){P.d--;throwDyn(a,false);}
+  else{P.m--;const t=lockOK(P.lock)?P.lock:(lockTargets()[0]||{}).e||null;fireRocket(a,P,t,false);P.recoil=6;shake=Math.max(shake,.3);}
+  borderFlash=.04;borderFlashIdx=P.w===1||P.w===3?14:15;gunNoise();}
 function gunNoise(){for(const e of L.enemies)if(e.st==='idle'){const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<16)wake(e);}panicAt(P.x,P.y,12);}
 
 // hitscan from the car: the nearest of wall, car, deputy, civilian or fuel drum takes it
@@ -90,3 +92,26 @@ function dropDrumFrom(c){const x=c.x-Math.cos(c.a)*(c.r+1.1),y=c.y-Math.sin(c.a)
 function updMines(dt){for(const t of L.things){if(!t.mine||t.fuse!==undefined)continue;if(t.arm>0){t.arm-=dt;continue;}
   if(!t.byP&&!P.dead&&Math.hypot(P.x-t.x,P.y-t.y)<P.r+.5){detonate(t,0);continue;}
   for(const c of L.vcars)if(!c.dead&&!c.parked&&c!==t.from&&Math.hypot(c.x-t.x,c.y-t.y)<c.r+.5){detonate(t,0);break;}}}
+
+/* ---------- homing rockets (Twisted Metal's bread and butter) ----------
+   They home on the lock, or on whatever is nearest ahead. No new art: the
+   rocket is a hot point of light with a smoke trail, from Bagman's particles. */
+function fireRocket(a,from,tgt,en){const c=Math.cos(a),s=Math.sin(a);
+  L.missiles.push({x:from.x+c*.8,y:from.y+s*.8,z:.55+(from.z||0),a,sp:8+speedOf(from)*.6,tgt,en,from,life:3.2,age:0});
+  rocketSnd(en?Math.max(.3,1-Math.hypot(from.x-P.x,from.y-P.y)/30):1);if(en){feed('INCOMING ROCKET',C_R);SFX.lock();}}
+function updMissiles(dt){const M=L.missiles;for(let i=M.length-1;i>=0;i--){const m=M[i];m.age+=dt;m.life-=dt;
+  const t=m.tgt;if(t&&m.age>.12&&(t===P?!P.dead:lockOK(t))){const d=angDiff(m.a,Math.atan2(t.y-m.y,t.x-m.x)),turn=(m.en?1.7:2.6)*dt;m.a+=clamp(d,-turn,turn);}
+  m.sp=Math.min(m.en?16:21,m.sp+28*dt);m.z+=(.5-m.z)*Math.min(1,dt*3);
+  const c=Math.cos(m.a),s=Math.sin(m.a),steps=Math.ceil(m.sp*dt/.25);let boom=m.life<=0;
+  for(let k=0;k<steps&&!boom;k++){m.x+=c*m.sp*dt/steps;m.y+=s*m.sp*dt/steps;
+    if(solidCell(Math.floor(m.x),Math.floor(m.y),false)){m.x-=c*.3;m.y-=s*.3;boom=true;break;}
+    if(m.en&&!P.dead&&Math.hypot(P.x-m.x,P.y-m.y)<P.r+.15&&Math.abs((P.z||0)-m.z+.3)<.9){boom=true;break;}
+    for(const v of L.vcars)if(v!==m.from&&!v.dead&&Math.hypot(v.x-m.x,v.y-m.y)<v.r+.1&&m.z>(v.z||0)-.2&&m.z<(v.z||0)+carH(v)+.3){boom=true;break;}
+    if(!boom&&!m.en)for(const e of L.enemies)if(e.st!=='dead'&&e.st!=='dying'&&Math.hypot(e.x-m.x,e.y-m.y)<.45){boom=true;break;}}
+  addPart(m.x-c*.2,m.y-s*.2,m.z,(rnd()-.5)*.3,(rnd()-.5)*.3,.3,[110,110,110],.05+rnd()*.03,.9,4);
+  addPart(m.x,m.y,m.z,0,0,0,m.en?[255,80,40]:[255,240,140],.045,.05,2);
+  if(boom){M.splice(i,1);kaboom(m.x,m.y,false,!m.en,false,.8);}}}
+// rockets for the AI: bosses and racers, now and then, when you are out in front of them
+function aiRocket(c,toP,dist,dt){c.mcool=(c.mcool===undefined?4+rnd()*6:c.mcool)-dt;
+  if(c.mcool>0||!c.los||P.dead||dist<7||dist>30||Math.abs(angDiff(c.a,toP))>.35)return;
+  c.mcool=(c.boss?5:9)+rnd()*5;c.fireT=.3;fireRocket(toP,c,P,true);}

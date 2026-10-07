@@ -21,7 +21,9 @@ function radar(){const R=26,cx=SW-R-4,cy=R+4,sc=.8,W=L.W;
     const wx=P.x+(rx*-P.dy-ry*P.dx)*sc,wy=P.y+(rx*P.dx-ry*P.dy)*sc,i=Math.floor(wy)*W+Math.floor(wx);
     put(cx+rx,cy+ry,wx<0||wy<0||wx>=W||wy>=L.H||L.map[i]?[0,0,120]:L.fmap[i]===F_WALK?[30,30,30]:C_K);}
   const dot=(x,y,c,s)=>{const dx=x-P.x,dy=y-P.y,rx=(dx*-P.dy+dy*P.dx)/sc,ry=-(dx*P.dx+dy*P.dy)/sc;if(rx*rx+ry*ry>(R-1)*(R-1))return;rect(Math.round(cx+rx-s/2),Math.round(cy+ry-s/2),s,s,c);};
+  for(const r of L.ramps||[])dot(r.x,r.y,[140,100,40],3);
   for(const sp of L.pick)if(sp.item&&PICKS[sp.kind].big)dot(sp.x,sp.y,C_C,2);
+  for(const m of L.missiles)if(((tm*10)|0)&1)dot(m.x,m.y,m.en?C_R:C_W,2);
   for(const e of L.enemies)if(e.st!=='dead'&&e.st!=='dying'&&e.st!=='idle')dot(e.x,e.y,C_Y,1);
   for(const c of L.vcars)if(!c.dead&&!c.parked)dot(c.x,c.y,c.traffic?[150,150,150]:c.boss||c.angry>0?(((tm*6)|0)&1?C_Y:C_R):C_R,c.traffic?2:c.boss?4:3);
   if(RACE.on&&!P.fin){const[x,y]=RACE.cps[P.cp];if(((tm*4)|0)&1)dot(x,y,C_Y,4);}

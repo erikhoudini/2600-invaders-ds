@@ -64,7 +64,7 @@ function drawCarBox(c,B,outline){const sc=c.sc||1,hl=B.L*sc/2,hw=B.W*sc/2,ca=Mat
     {n:[-rx,-ry],cx:c.x-rx*hw,cy:c.y-ry*hw,A:[fx-rx*hw,fy-ry*hw],B:[bx-rx*hw,by-ry*hw],bands:B.side,sh:.82}];
   const vis=faces.filter(f=>f.n[0]*(P.x-f.cx)+f.n[1]*(P.y-f.cy)>0).sort((a,b)=>((b.cx-P.x)**2+(b.cy-P.y)**2)-((a.cx-P.x)**2+(a.cy-P.y)**2));
   BOXMIN=SW;BOXMAX=-1;BOXT=VH;BOXB=-1;
-  for(const f of vis)drawFace(scaleBands(f.bands),f.A[0],f.A[1],f.B[0],f.B[1],0,f.sh);
+  for(const f of vis)drawFace(scaleBands(f.bands),f.A[0],f.A[1],f.B[0],f.B[1],c.z||0,f.sh);
   if(BOXMAX<0)return null;
   const box={l:BOXMIN,r:BOXMAX,t:BOXT,b:BOXB};
   // outline like Bagman's sprites, then clear the mask we used

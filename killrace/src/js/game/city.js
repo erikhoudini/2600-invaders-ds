@@ -77,7 +77,7 @@ function genCity(seed){
   // cells a car can drive through without scraping a wall
   L.wide=new Uint8Array(W*H);for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){let ok=1;for(let oy=-1;oy<=1&&ok;oy++)for(let ox=-1;ox<=1;ox++){const j=(y+oy)*W+x+ox;if(map[j]||L.block[j]){ok=0;break;}}L.wide[y*W+x]=ok;}
   L.cflow=new Float32Array(W*H);L.cflowT=0;
-  L.sky=makeSky(1977,1,420,0);L.outdoor=true;L.camZ=CAM_Z;L.bombs=[];L.pflames=[];L.vcars=[];L.peds=[];L.pick=[];
+  L.sky=makeSky(1977,1,420,0);L.outdoor=true;L.camZ=CAM_Z;L.bombs=[];L.pflames=[];L.missiles=[];L.ramps=[];L.vcars=[];L.peds=[];L.pick=[];
   placeGraffiti(L,R);
   return L;}
 

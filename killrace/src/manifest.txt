@@ -8,7 +8,8 @@
 # Bagman file that calls hurtPlayer(), hurtEnemy(), wake(), carHit() or
 # detonate() gets the versions defined in js/game/damage.js.
 #
-# Every asset comes from Bagman's asset table; Kill Race adds no art or sound.
+# Art comes from Bagman's asset table. Kill Race adds a table of car sounds and
+# music from free, credited sources (assets/assets.json, assets/CREDITS.md).
 
 html/head.html
 ../../bagman/src/css/tokens.css
@@ -16,6 +17,7 @@ html/head.html
 ../../bagman/src/css/modes.css
 ../../bagman/src/html/body.html
 @table A ../bagman/assets/assets.json
+@table KA assets/assets.json
 ../../bagman/src/js/data/font.js
 
 # engine
@@ -42,8 +44,10 @@ html/head.html
 
 # the car game
 js/game/state.js
+js/audio/sound.js
 js/game/city.js
 js/game/vehicles.js
+js/game/air.js
 js/game/damage.js
 js/game/weapons.js
 js/game/player.js

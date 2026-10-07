@@ -30,7 +30,7 @@ function newRace(){GAMEMODE='race';L=genCity(7);const W=L.W;
   const onLine=(x,y)=>onCourse(x,y,2.6);
   for(let i=L.things.length-1;i>=0;i--){const t=L.things[i];if((t.boom||t.d===dec('FIRE'))&&onLine(t.x,t.y)){L.block[Math.floor(t.y)*W+Math.floor(t.x)]=0;L.things.splice(i,1);}}
   L.fires=L.fires.filter(f=>!onLine(f.x,f.y));
-  setupPickups(rng(99));resetPlayer();spawnPeds(30,6);
+  placeRamps(null,RACE.cps);setupPickups(rng(99));resetPlayer();spawnPeds(30,6);
   L.cpField=RACE.cps.map(([x,y])=>{const f=new Float32Array(W*L.H);computeFlowFrom(Math.floor(y)*W+Math.floor(x),f);return f;});
   // gates across the road, square to the way you arrive
   RACE.cps.forEach(([x,y],i)=>{const[px,py]=RACE.cps[(i+n-1)%n],dx=x-px,dy=y-py,l=Math.hypot(dx,dy)||1,nx=-dy/l,ny=dx/l;

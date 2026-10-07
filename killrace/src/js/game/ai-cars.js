@@ -17,7 +17,7 @@ function flowTarget(c,f=L.cflow,steps=4){const W=L.W;let i=Math.floor(c.y)*W+Mat
 function updAICar(c,dt){
   if(c.flash>0)c.flash-=dt;if(c.fireT>0)c.fireT-=dt;if(c.angry>0)c.angry-=dt;
   if(c.traffic&&!c.dead){driveTraffic(c,dt);return;}
-  if(c.dead||c.parked){if(c.wreck){c.wreckT-=dt;c.vx*=Math.max(0,1-dt*2);c.vy*=Math.max(0,1-dt*2);moveCar(c,dt);
+  if(c.dead||c.parked){if(c.wreck){c.wreckT-=dt;if(!airStep(c,dt)){c.vx*=Math.max(0,1-dt*2);c.vy*=Math.max(0,1-dt*2);moveCar(c,dt);}
       if(rnd()<dt*14)addPart(c.x+(rnd()-.5)*.6,c.y+(rnd()-.5)*.6,.4+rnd()*.3,(rnd()-.5)*.3,(rnd()-.5)*.3,1+rnd(),rnd()<.5?[255,200,0]:[255,70,0],.04,.5,2);
       if(rnd()<dt*5)addPart(c.x,c.y,.9,(rnd()-.5)*.2,(rnd()-.5)*.2,1,[60,60,60],.09,1.6,4);}
     if(c.parked&&!c.dead&&c.hp<c.hp0*.5&&rnd()<dt*4)addPart(c.x,c.y,.7,(rnd()-.5)*.2,(rnd()-.5)*.2,.9,[90,90,90],.07,1.2,4);
@@ -56,6 +56,7 @@ function updAICar(c,dt){
       // alternate the way we back out, and if that keeps failing, get put back on the road out of sight
       c.stuckDir=c.stuckN%2?(Math.sign(da)||1):-(Math.sign(da)||1);if(c.stuckN>=3||(c.stuckN>=2&&(!c.los||dist>12)))unstick(c);}}
   stepCar(c,dt,inp);
+  if(c.boss||c.racer)aiRocket(c,toP,dist,dt);
   // guns
   c.cool-=dt;if(c.burst>0){c.burstT-=dt;if(c.burstT<=0){c.burst--;c.burstT=.11;aiShoot(c,toP,dist);}}
   if(!c.los||P.dead||c.cool>0)return;const off=Math.abs(angDiff(c.a,toP));

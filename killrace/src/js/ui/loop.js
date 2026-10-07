@@ -9,7 +9,7 @@ function update(rdt){const dt=rdt*(P.slow>0?.35:1);
   L.cflowT-=dt;if(L.cflowT<=0){L.cflowT=.35;computeCarFlow();}
   updCars(dt);carCollisions();runOver();updPeds(dt);
   updEnemies(dt);shotsVsCars();updShots(dt);
-  updFlames(dt);updBombs(dt);updMines(dt);updFuses(dt);updParts(dt);updPickups(dt);
+  updFlames(dt);updBombs(dt);updMissiles(dt);updMines(dt);updFuses(dt);updParts(dt);updPickups(dt);
   if(state==='play'){if(GAMEMODE==='race')updRace(dt);else updWaves(dt);updTraffic(GAMEMODE==='race'?8:10);}
   // burning barrels flicker
   for(const f of L.fires)if(rnd()<dt*8&&Math.hypot(f.x-P.x,f.y-P.y)<30)addPart(f.x+(rnd()-.5)*.3,f.y+(rnd()-.5)*.3,.7,(rnd()-.5)*.2,(rnd()-.5)*.2,1+rnd(),rnd()<.5?[255,200,0]:[255,80,0],.035,.5,2);}
@@ -30,7 +30,7 @@ function frame(ts){requestAnimationFrame(frame);let rdt=Math.min(.05,(ts-last)/1
   show(borderFlash>0&&OPT.flash?borderFlashIdx:(P.berserk>0&&OPT.flash?(((tm*4)|0)&1?2:10):P.boosting?5:0));}
 
 // open the page with #debug to reach the game from a test harness or the console
-if(location.hash==='#debug')window.KR={P,WAVE,RACE,newRace,CARK,ft:(c,f)=>flowTarget(c,f),setCar:k=>{PCAR=k;},get L(){return L},get state(){return state},newGame,setDir,computeCarFlow,spawnCar,makeCar,kaboom,lockCycle,
+if(location.hash==='#debug')window.KR={P,WAVE,RACE,newRace,CARK,ft:(c,f)=>flowTarget(c,f),setCar:k=>{PCAR=k;},get L(){return L},get state(){return state},newGame,setDir,fireRocket,airLaunch,computeCarFlow,spawnCar,makeCar,kaboom,lockCycle,
   car:(k,x,y,a)=>{const c=makeCar(k,x,y,a);L.vcars.push(c);return c;}};
 async function start(){initGL();resize();fctx.fillStyle='#000';fctx.fillRect(0,0,SW,SH);present(0);
-  await loadAssets();makeCivSheets();makeCarBodies();touchSetup();titleInit();requestAnimationFrame(frame);}
+  await loadAssets();makeCivSheets();makeCarBodies();makeRampBodies();krSounds();touchSetup();titleInit();requestAnimationFrame(frame);}

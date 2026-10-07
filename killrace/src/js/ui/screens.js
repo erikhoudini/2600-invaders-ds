@@ -7,8 +7,8 @@ const HELP=[['W S','GAS, BRAKE','A D','STEER'],['SPACE','FIRE','SHIFT','NITRO'],
 const MODES=[['WAVES','THE GECKOS COME IN WAVES. LAST AS LONG AS YOU CAN.'],['RACE','3 LAPS, 8 CHECKPOINTS, 5 ARMED RACERS.']];
 let TITLE_SEL=0;
 let titleT=0;
-function titleInit(){RACE.on=false;L=genCity(7);for(const[x,y,a,k]of L.parkAt)L.vcars.push(makeCar(k,x,y,a,{parked:true,hp:90,hp0:90}));
-  resetPlayer();spawnPeds(40,2);P.x=L.sx;P.y=L.sy+2;state='title';titleT=0;setBody('m-cine');rumbleOn(false);}
+function titleInit(){RACE.on=false;L=genCity(7);placeRamps(rng(5));for(const[x,y,a,k]of L.parkAt)L.vcars.push(makeCar(k,x,y,a,{parked:true,hp:90,hp0:90}));
+  resetPlayer();spawnPeds(40,2);P.x=L.sx;P.y=L.sy+2;state='title';titleT=0;setBody('m-cine');rumbleOn(false);loopsOff();musicFor('title');}
 function dim(k){for(let i=0;i<SW*VH*4;i+=4){D[i]*=k;D[i+1]*=k;D[i+2]*=k;}}
 function shadowText(s,y,c,sc){const x=((SW-textW(s,sc))/2)|0;text(s,x+sc,y+sc,C_R,sc);text(s,x,y,c,sc);}
 
@@ -42,7 +42,7 @@ function overDraw(dt){overT+=dt;light=1;renderBack();skyFill();krWalls();krSprit
 
 /* ---------- the garage: pick a car, shown as a turning box on the street ---------- */
 const GARAGE=['player','pPickup','pCruiser'];let GSEL=0,garageT=0;
-function garageOpen(){state='garage';garageT=0;play('menu',.5,1.1);}
+function garageOpen(){state='garage';garageT=0;play('menu',.5,1.1);musicFor('title');}
 function wrapLine(t,n){const out=[];let cur='';for(const w of t.split(' ')){if((cur+' '+w).trim().length>n){out.push(cur);cur=w;}else cur=(cur+' '+w).trim();}if(cur)out.push(cur);return out;}
 function garageFrame(dt){garageT+=dt;titleT+=dt;P.x=L.sx;P.y=L.sy+2;P.a=-Math.PI/2;P.fov=.66;setDir();HZ=HALF;updPeds(dt);updParts(dt);
   light=1;renderBack();skyFill();krWalls();krSprites();dim(.4);

@@ -6,7 +6,7 @@
    ===================================================================== */
 let PCAR='player';
 function resetPlayer(){const K=CARK[PCAR];Object.assign(P,{K,mass:K.mass,r:.55,wheel:0,gear:1,heat:0,hot:0,pitch:0,sway:0,x:L.sx,y:L.sy,a:L.sa,vx:0,vy:0,hp:K.hp,maxHp:K.hp,armor:0,lock:null,lockLost:0,hurt:0,flash:0,dead:0,
-  berserk:0,slow:0,flame:0,rage:false,w:0,has:[1,0,0],s:0,d:0,drums:2,nitro:100,boosting:0,cool:0,anim:null,recoil:0,score:0,chain:0,chainT:0,kills:0,peds:0,foot:0,bump:0,hornT:0,fov:.66,time:0,dmgBy:{},cp:0,lap:1,fin:0,newRace:0});if(PCAR==='pPickup'){P.has[1]=1;P.s=16;}setDir();}
+  berserk:0,slow:0,flame:0,rage:false,w:0,has:[1,0,0,0],s:0,d:0,m:0,drums:2,nitro:100,boosting:0,cool:0,anim:null,recoil:0,score:0,chain:0,chainT:0,kills:0,peds:0,foot:0,bump:0,hornT:0,fov:.66,time:0,z:0,vz:0,spin:0,dmgBy:{},cp:0,lap:1,fin:0,newRace:0});if(PCAR==='pPickup'){P.has[1]=1;P.s=16;}setDir();}
 
 function driveInput(){const K_=c=>!!keys[c];
   let thr=(K_('KeyW')||K_('ArrowUp'))?1:0,brake=(K_('KeyS')||K_('ArrowDown'))?1:0,steer=(K_('KeyD')||K_('ArrowRight')?1:0)-(K_('KeyA')||K_('ArrowLeft')?1:0);
@@ -24,7 +24,7 @@ function updPlayer(rdt){if(P.dead)return;P.time+=rdt;
   const inp=RACE.on&&RACE.count>0?{thr:0,brake:0,steer:0}:driveInput();
   // nitro burns while held; it only comes back by driving hard: drifting, and hitting other cars (Full Auto, Burnout)
   if(inp.boost){P.nitro=Math.max(0,P.nitro-30*rdt);if(!P.boosting)play('power',.35,1.6);P.boosting=1;}else P.boosting=0;
-  stepCar(P,rdt,inp);
+  stepCar(P,rdt,inp);L.camZ=CAM_Z+(P.z||0);
   const sp=speedOf(P);P.mvx=P.vx;P.mvy=P.vy;
   if(P.slip>1.4&&sp>5&&!inp.boost)P.nitro=Math.min(100,P.nitro+16*rdt);
   if(!inp.boost)P.nitro=Math.min(100,P.nitro+1.5*rdt);
@@ -34,9 +34,9 @@ function updPlayer(rdt){if(P.dead)return;P.time+=rdt;
   const want=.66+Math.min(1,sp/14)*.06+(P.boosting?.07:0);P.fov+=(want-P.fov)*Math.min(1,rdt*4);setDir();
   P.bump=Math.max(0,P.bump-rdt*30);HZ=HALF+Math.round(P.pitch+P.bump*Math.sin(tm*40)+(sp>5?(rnd()-.5)*sp*.04:0));
   // the engine note follows the revs through the gears
-  if(!rumble&&SBUF.engine)rumbleOn(true);
+  if(!engineSnd(P.rpm||0,P.gear||1,inp.thr,P.boosting,P.skid&&sp>4&&!(P.z>0),P.slip||0)){if(!rumble&&SBUF.engine)rumbleOn(true);
   if(rumble&&isFinite(P.rpm)){rumble.s.playbackRate.value=(.32+P.rpm*.42+P.gear*.05+(P.boosting?.12:0))*timeScaleAudio;rumble.g.gain.value=.08+.12*inp.thr+(P.shiftT>0?-.05:0);}
-  if(P.skid&&sp>4&&rnd()<rdt*10)play('push',.16,2.3+rnd()*.4,.1);
+  if(P.skid&&sp>4&&rnd()<rdt*10)play('push',.16,2.3+rnd()*.4,.1);}
   // guns
   // the twin AK runs hot (Vigilante 8): it cools when you let go, and locks up for a moment if you cook it
   P.heat=Math.max(0,P.heat-rdt*(P.hot?.45:.55));if(P.hot&&P.heat<.3){P.hot=0;feed('GUNS COOL',C_GR);}
@@ -49,7 +49,7 @@ function updPlayer(rdt){if(P.dead)return;P.time+=rdt;
   for(const f of L.fires)if(Math.hypot(f.x-P.x,f.y-P.y)<1.1){hurtPlayer(20*rdt,undefined,'fire');if(rnd()<rdt*10)addPart(P.x,P.y,.4,(rnd()-.5),(rnd()-.5),1.5,[255,140,0],.03,.4,2);}}
 
 function selectGun(w){if(P.flame>0||w===P.w||!P.has[w])return;if(ammoLeft(w)<=0){feed('NO '+GUNS[w].name+' AMMO',C_GR);return;}P.lastW=P.w;P.w=w;SFX.weapon();}
-function nextGun(){for(let k=1;k<=3;k++){const w=(P.w+k)%3;if(P.has[w]&&ammoLeft(w)>0){selectGun(w);return;}}}
+function nextGun(){for(let k=1;k<=4;k++){const w=(P.w+k)%4;if(P.has[w]&&ammoLeft(w)>0){selectGun(w);return;}}}
 function horn(){if(P.hornT>0)return;P.hornT=1.2;SFX.horn();panicAt(P.x,P.y,14);}
 
 // Carmageddon's credits: spend score on an instant repair, or to be put back on the road

@@ -17,10 +17,11 @@ function drawCar(c){const K=c.K,sc=c.sc||1,B=BODY[c.body||c.kind];
 function krSprites(){lockBox=null;const list=[],far=48*48;
   const add=(o,k)=>{const d=(o.x-P.x)**2+(o.y-P.y)**2;if(d<far)list.push({d,o,k});};
   for(const t of L.things)add(t,'t');for(const c of L.vcars)add(c,'c');for(const p of L.peds)add(p,'p');for(const e of L.enemies)add(e,'e');
-  for(const s of L.shots)add(s,'s');for(const s of L.pflames)add(s,'s');for(const b of L.bombs)add(b,'b');
+  for(const r of L.ramps||[])add(r,'r');for(const s of L.shots)add(s,'s');for(const s of L.pflames)add(s,'s');for(const b of L.bombs)add(b,'b');
   list.sort((a,b)=>b.d-a.d);
   for(const {o,k}of list){
     if(k==='c')drawCar(o);
+    else if(k==='r')drawRamp(o);
     else if(k==='t'){if(o.t==='tree')drawSprite(TREES,o.ti*64,0,64,128,o.x,o.y,2.6);
       else if(o.t==='item'){const pow=PICKS[o.kind]&&PICKS[o.kind].big,bob=.14+.06*Math.sin(tm*3.2+o.x*1.7);
         drawSprite(DECO,o.d*64,0,64,64,o.x,o.y,pow?1.3:1.1,false,false,pow?(((tm*5)|0)&1?C_W:C_C):C_K,bob);}
