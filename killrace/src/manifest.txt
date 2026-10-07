@@ -1,0 +1,62 @@
+# KILL RACE build manifest. Same format as bagman/src/manifest.txt.
+#
+# Kill Race is built on the BAGMAN engine. Every ../../bagman/ line below is a
+# Bagman engine file used unchanged: the palette and CRT pipeline, asset
+# loading, audio, the floor caster, sprites and particles, and the whole
+# on-foot enemy AI (deputies and dogs on the sidewalks are Bagman enemies).
+# The js/ lines after them are the car game. All of it shares one scope, so a
+# Bagman file that calls hurtPlayer(), hurtEnemy(), wake(), carHit() or
+# detonate() gets the versions defined in js/game/damage.js.
+#
+# Every asset comes from Bagman's asset table; Kill Race adds no art or sound.
+
+html/head.html
+../../bagman/src/css/tokens.css
+../../bagman/src/css/layout.css
+../../bagman/src/css/modes.css
+../../bagman/src/html/body.html
+@table A ../bagman/assets/assets.json
+../../bagman/src/js/data/font.js
+
+# engine
+../../bagman/src/js/core/prelude.js
+../../bagman/src/js/core/helpers.js
+../../bagman/src/js/render/clash.js
+../../bagman/src/js/render/text.js
+../../bagman/src/js/render/crt.js
+../../bagman/src/js/assets/loader.js
+../../bagman/src/js/audio/audio.js
+../../bagman/src/js/data/game-data.js
+../../bagman/src/js/levelgen/common.js
+../../bagman/src/js/levelgen/level.js
+../../bagman/src/js/world/queries.js
+../../bagman/src/js/world/particles.js
+../../bagman/src/js/enemies/core.js
+../../bagman/src/js/enemies/dogs.js
+../../bagman/src/js/enemies/tactics.js
+../../bagman/src/js/enemies/update.js
+../../bagman/src/js/enemies/shots.js
+../../bagman/src/js/render/world.js
+../../bagman/src/js/render/sprites.js
+../../bagman/src/js/render/overlay.js
+
+# the car game
+js/game/state.js
+js/game/city.js
+js/game/vehicles.js
+js/game/damage.js
+js/game/weapons.js
+js/game/player.js
+js/game/ai-cars.js
+js/game/peds.js
+js/game/pickups.js
+js/game/waves.js
+js/render/walls.js
+js/render/scene.js
+js/render/hud.js
+js/ui/screens.js
+js/ui/input.js
+js/ui/loop.js
+
+../../bagman/src/js/core/start.js
+../../bagman/src/html/foot.html

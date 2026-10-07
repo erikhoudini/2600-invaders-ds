@@ -1,5 +1,0 @@
-build/
-*.nds
-*.elf
-tests/test_game
-compile_commands.json

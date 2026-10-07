@@ -1,0 +1,17 @@
+{
+  "name": "bagman",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BAGMAN and games built on its engine. Each builds to one self-contained HTML file.",
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build.mjs bagman && node tools/build.mjs killrace",
+    "build:bagman": "node tools/build.mjs bagman",
+    "build:killrace": "node tools/build.mjs killrace",
+    "check:bagman": "node tools/build.mjs bagman --check",
+    "smoke": "node tools/smoke.mjs bagman && node tools/smoke.mjs killrace"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

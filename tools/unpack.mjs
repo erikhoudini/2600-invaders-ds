@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 // Split a single-file BAGMAN build back into src/ and assets/.
 //
-//   node tools/unpack.mjs path/to/bagman.html
+//   node tools/unpack.mjs path/to/bagman.html     (writes into bagman/)
 //
 // Use it when a change was made directly to a single-file build and has to come
 // back into this tree. It overwrites src/ pieces and assets/ files named in
-// src/manifest.txt. Run `node tools/build.mjs --check that.html` afterwards to
+// bagman/src/manifest.txt. Run `node tools/build.mjs bagman --check that.html` afterwards to
 // confirm the round trip is exact.
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {EXT, pretty, readManifest, walkStrings} from './lib.mjs';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'bagman');
 const input = process.argv[2];
 if (!input) { console.error('usage: node tools/unpack.mjs <bagman.html>'); process.exit(1); }
 
