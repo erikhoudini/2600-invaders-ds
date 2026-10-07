@@ -1,0 +1,12 @@
+/* ============ modes: menus and cut scenes take the whole screen, play shows the pads ============ */
+body.m-ui #app,body.m-cine #app{display:flex;justify-content:center;align-items:center;max-width:none}
+body.m-ui .pad,body.m-cine .pad{display:none}
+body.m-ui #screen,body.m-cine #screen{border:0;width:100%;height:100%;padding:6px}
+body.m-ui #view,body.m-cine #view{width:min(100%,calc((100dvh - 16px) * 1.3333));height:auto;aspect-ratio:4/3}
+body.m-ui.port #view{aspect-ratio:272/432;width:min(100%,calc((100dvh - 16px) * .6296))}
+body.m-game #view{cursor:crosshair}
+body.m-ed #app{display:flex;justify-content:center;align-items:center;max-width:none}
+body.m-ed .pad{display:none}
+body.m-ed #screen{border:0;width:100%;height:100%;padding:6px}
+body.m-ed #view{width:min(100%,calc((100dvh - 16px) * 1.5556));height:auto;aspect-ratio:672/432;cursor:default}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}

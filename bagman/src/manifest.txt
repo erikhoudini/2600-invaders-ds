@@ -1,0 +1,123 @@
+# BAGMAN build manifest.
+#
+# Every line is one piece of the shipped page, in order. tools/build.mjs joins
+# them into dist/bagman.html. All JavaScript pieces share ONE scope (the
+# (()=>{ ... })(); wrapper opens in js/core/prelude.js and closes in
+# js/core/start.js), so order matters: a piece may only use a top-level
+# const/let from an earlier piece at load time.
+#
+# "@table NAME file" emits `const NAME=<json>;` with every "asset:<path>"
+# string replaced by a base64 data URI of assets/<path>.
+#
+# The text after | is the first line of that piece in a shipped single-file
+# build. Only tools/unpack.mjs uses it, to split a single file back into
+# this tree. Leading // comments and section banners above a marker go with it.
+
+html/head.html                      | <!doctype html>
+css/tokens.css                      | /* ============ tokens
+css/layout.css                      | /* ============ game layout
+css/modes.css                       | /* ============ modes
+html/body.html                      | </style>
+@table A assets/assets.json         | const A=
+@table COMICS assets/comics.json    | const COMICS=
+js/data/font.js                     | const FONT=
+
+js/core/prelude.js                  | (()=>{
+js/core/helpers.js                  | 1. CONSTANTS AND SMALL HELPERS
+js/render/clash.js                  | 2. FRAMEBUFFER AND SPECTRUM ATTRIBUTE CLASH
+js/render/text.js                   | 3. BITMAP FONT AND 2D PRIMITIVES
+js/render/crt.js                    | 4. DISPLAY: CRT TUBE
+js/assets/loader.js                 | 5. ASSETS
+js/audio/audio.js                   | 6. AUDIO
+js/data/game-data.js                | 7. GAME DATA
+
+js/levelgen/common.js               | 8. LEVEL GENERATION
+js/levelgen/maze.js                 | function hallMaze
+js/levelgen/yard.js                 | function genYard
+js/levelgen/train.js                | function genTrain
+js/levelgen/sniper.js               | function genSniper
+js/levelgen/spirals.js              | const SPN=
+js/levelgen/arenas.js               | let ARENAMAP=
+js/levelgen/level.js                | function genLevel
+
+js/state/player.js                  | 9. PLAYER AND SESSION STATE
+js/state/stats.js                   | let SAVE=
+js/state/achievements.js            | const SUITS=
+js/state/saves.js                   | function loadSave
+js/state/rules.js                   | let GM='story'
+js/state/session.js                 | let state='boot'
+
+js/world/queries.js                 | 10. WORLD QUERIES
+js/world/particles.js               | 11. STAINS AND PARTICLES
+
+js/combat/chain.js                  | 12. COMBAT
+js/combat/damage.js                 | function hurtEnemy
+js/combat/hitscan.js                | function fireRay
+js/combat/explosives.js             | function carHit
+js/combat/weapons.js                | function aimAngle
+js/combat/weapon-wheel.js           | const WHEEL=
+js/combat/player-damage.js          | function hurtPlayer
+js/combat/lock-on.js                | 13. LOCK-ON AND BERSERK DASH
+
+js/enemies/core.js                  | 14. ENEMIES
+js/enemies/dogs.js                  | function updDog
+js/enemies/tactics.js               | function nearBarrel
+js/enemies/update.js                | function updEnemies
+js/enemies/shots.js                 | function updShots
+
+js/world/doors-waves.js             | 15. DOORS, SECRETS, SWITCH, WAVES
+js/modes/sniper.js                  | 15b. SNIPER
+js/player/update.js                 | 16. PLAYER UPDATE AND PICKUPS
+js/player/pickups.js                | const PICKNAME=
+
+js/render/world.js                  | 17. RENDER
+js/render/sprites.js                | function project
+js/render/weapon.js                 | function renderWeapon
+js/render/overlay.js                | function postFX
+js/render/hud.js                    | let showMap=
+
+js/modes/rails.js                   | 18. RAILS MODE
+js/cine/comics.js                   | 19. THE LINE
+js/cine/intro.js                    | let intro=null
+js/core/loop.js                     | 20. FRAME LOOP
+js/data/how-to-play.js              | const fmtT=
+
+js/ui/surface.js                    | 21. SCREENS
+js/ui/draw.js                       | /* ---------- drawing on the current surface
+js/ui/images.js                     | /* ---------- pictures
+js/ui/nav.js                        | /* ---------- screen state, navigation and input
+js/ui/layout.js                     | /* ---------- standard layout
+js/screens/title.js                 | /* ---------- boot, title and main menu
+js/screens/story.js                 | /* ---------- story
+js/screens/blackjack.js             | /* ---------- blackjack
+js/screens/hustles.js               | /* ---------- side hustles
+js/modes/arena.js                   | const SHOP=
+js/screens/modified.js              | /* ---------- modified runs
+js/screens/cache.js                 | /* ---------- drug cache
+js/screens/cheats.js                | const CHEATS=
+js/screens/credits.js               | const POSTC=
+js/screens/achievements.js          | /* ---------- achievements as a hand of cards
+js/screens/options.js               | /* ---------- options
+
+js/input/input.js                   | 22. INPUT
+js/input/gamepad.js                 | const GP=
+js/core/boot.js                     | 23. BOOT
+
+js/custom/library.js                | CUSTOM MAPS (desktop release)
+js/custom/screens.js                | function showCustom
+
+js/editor/state.js                  | LEVEL EDITOR
+js/editor/level-data.js             | /* ---------- level data
+js/editor/thumbs.js                 | /* ---------- thumbnails
+js/editor/palettes.js               | /* ---------- palettes
+js/editor/editing.js                | /* ---------- editing
+js/editor/checks.js                 | /* ---------- checks before a test
+js/editor/build-level.js            | /* ---------- level object for the engine
+js/editor/test-play.js              | /* ---------- test play
+js/editor/files.js                  | /* ---------- files
+js/editor/draw.js                   | /* ---------- drawing
+js/editor/modals.js                 | /* ---------- modal panels
+js/editor/input.js                  | /* ---------- input ----------
+
+js/core/start.js                    | start();
+html/foot.html                      | </script>

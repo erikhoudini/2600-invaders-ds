@@ -1,0 +1,304 @@
+{
+  "walls": "asset:textures/walls.jpg",
+  "wallNames": ["SWITCH", "SWITCHON", "LOCKED", "ELEV", "RV", "CARR", "CARB", "CARW", "STUCCO", "ROCK", "CINDER", "SHACK", "BOARD", "STORE", "FENCE", "CASINO", "REEFER", "MOTEL1", "MOTEL2", "MOTEL3", "MOTELC", "SUDS1", "SUDS2", "SUDS3", "SUDSC", "COLD1", "COLD2", "COLD3", "COLDC", "SUB1", "SUB2", "SUB3", "SUBC", "CNTY1", "CNTY2", "CNTY3", "CNTYC", "ROCK2", "SHACK2", "EXITM", "CHAN1", "CHAN2", "CHAN3", "CHANC", "CNT1", "CNT2", "CNT3", "CNTC", "CASINO2", "BOARD2", "HANG1", "HANG2", "HANG3", "HANGC", "DOOR", "GLASSD", "CINDER2", "WINDOW", "WINDOW2", "LOCKEDR", "FRAMED0", "FRAMED1", "FRAMED2", "FRAMED3", "POSTER0", "POSTER1", "POSTER2", "POSTER3", "POSTER4", "POSTER5", "POSTER6", "SHOP1", "SHOP2"],
+  "TS": 128,
+  "floors": {
+    "carpet": "asset:textures/floors/carpet.jpg",
+    "asphalt": "asset:textures/floors/asphalt.jpg",
+    "checker": "asset:textures/floors/checker.jpg",
+    "brtile": "asset:textures/floors/brtile.jpg",
+    "smtile": "asset:textures/floors/smtile.jpg",
+    "concrete": "asset:textures/floors/concrete.jpg",
+    "dirt": "asset:textures/floors/dirt.jpg",
+    "wet": "asset:textures/floors/wet.jpg",
+    "panel": "asset:textures/floors/panel.jpg",
+    "asphalt2": "asset:textures/floors/asphalt2.jpg",
+    "slab": "asset:textures/floors/slab.jpg"
+  },
+  "cop": "asset:sprites/cop.png",
+  "thug": "asset:sprites/thug.png",
+  "wFists": {
+    "img": "asset:weapons/wFists.png",
+    "w": 141,
+    "h": 95,
+    "x": 108,
+    "y": 65,
+    "n": 3
+  },
+  "wPistol": {
+    "img": "asset:weapons/wPistol.png",
+    "w": 150,
+    "h": 84,
+    "x": 59,
+    "y": 76,
+    "n": 5
+  },
+  "wShotgun": {
+    "img": "asset:weapons/wShotgun.png",
+    "w": 135,
+    "h": 117,
+    "x": 95,
+    "y": 43,
+    "n": 5
+  },
+  "deco": "asset:sprites/deco.png",
+  "decoNames": ["BARREL", "TABLE", "TABLE2", "RACK", "STOVE", "VAT", "VAT2", "PUDDLE", "HANGER", "BONES", "BODY1", "BODY2", "BODY3", "DRUMCAN", "TOXIC", "PLANT", "KEYY", "GUNSHOT", "POTS", "BODY4", "MEDKIT", "CASH", "ROLL", "BAGGIE", "KILO", "PACKAGE", "PILLS", "CHAIN", "SHELLS", "CLIP", "DRUM", "BOTTLE", "BOX", "POOL", "CARCASS", "PUMP", "JTREE", "FIRE", "LAMP", "TIRE", "GUNTOMMY", "KEYR", "BERSERK", "KEVLAR", "DEADEYE", "XDRUM", "DEBRIS", "VEST", "PLATE", "TOMMYGUN", "DYNAMITE", "DYN", "FULLHP", "SPIRAL", "FLAMER", "CRATE"],
+  "cars": "asset:sprites/cars.png",
+  "carNames": ["sedanR", "sedanW", "sedanY", "pickup", "cruiser", "bike"],
+  "photos": {
+    "01": "asset:photos/01.png",
+    "02": "asset:photos/02.png",
+    "03": "asset:photos/03.png",
+    "04": "asset:photos/04.png",
+    "05": "asset:photos/05.png",
+    "06": "asset:photos/06.png",
+    "07": "asset:photos/07.png",
+    "08": "asset:photos/08.png",
+    "09": "asset:photos/09.png",
+    "10": "asset:photos/10.png",
+    "11": "asset:photos/11.png",
+    "12": "asset:photos/12.png",
+    "13": "asset:photos/13.png",
+    "15": "asset:photos/15.png",
+    "16": "asset:photos/16.png",
+    "17": "asset:photos/17.png",
+    "18": "asset:photos/18.png",
+    "19": "asset:photos/19.png"
+  },
+  "photoMeta": {
+    "01": {
+      "title": "Hotel. Austin, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017780024/"
+    },
+    "02": {
+      "title": "Trailer truck at gas station. Elko, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017779841/"
+    },
+    "03": {
+      "title": "Stores on main street. Elko, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017779831/"
+    },
+    "05": {
+      "title": "Deputy sheriff, Mogollon, New Mexico",
+      "by": "Lee, Russell, 1903-1986",
+      "date": "1940",
+      "url": "https://commons.wikimedia.org/wiki/File:Deputy_sheriff_Mogollon_New_Mexico.jpg"
+    },
+    "06": {
+      "title": "Main street. Tonopah, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017774594/"
+    },
+    "07": {
+      "title": "Rear of interstate truck. Elko, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017779720/"
+    },
+    "08": {
+      "title": "Abandoned mine. Goldfield, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017727021/"
+    },
+    "09": {
+      "title": "Dust storm on desert. Nye County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017779965/"
+    },
+    "10": {
+      "title": "Crap game. Las Vegas. Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017779914/"
+    },
+    "11": {
+      "title": "Ruins of buildings in ghost mining town. Rhyolite, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017774640/"
+    },
+    "12": {
+      "title": "Las Vegas, Nevada. A view from a watchtower, showing the Basic Magnesium Incorporated plant, its 1,000 unit housing development, transmission lines and roads",
+      "by": "Henle, Fritz, 1909-1993",
+      "date": "1942",
+      "url": "https://www.loc.gov/item/2017866542/"
+    },
+    "13": {
+      "title": "Highway U.S. 40 through Elko County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017779749/"
+    },
+    "15": {
+      "title": "Signpost on desert. Nye County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017774638/"
+    },
+    "04": {
+      "title": "Abandoned mill. Washoe County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017780103/"
+    },
+    "16": {
+      "title": "Desert. Lander County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017780018/"
+    },
+    "17": {
+      "title": "Road through desert. Lander County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017780017/"
+    },
+    "18": {
+      "title": "Prospector in the desert. Esmeralda County, Nevada",
+      "by": "Rothstein, Arthur, 1915-1985",
+      "date": "1940",
+      "url": "https://www.loc.gov/item/2017774603/"
+    },
+    "19": {
+      "title": "Las Vegas, Nevada. Like a row of dirigible balloons, the propane gas storage tanks rest upon the floor of the southern Nevada desert at Basic Magnesium's giant plant, where magnesium is produced",
+      "by": "Henle, Fritz, 1909-1993",
+      "date": "1942",
+      "url": "https://www.loc.gov/item/2017866589/"
+    }
+  },
+  "wTommy": {
+    "img": "asset:weapons/wTommy.png",
+    "w": 145,
+    "h": 95,
+    "x": 105,
+    "y": 65,
+    "n": 3
+  },
+  "trees": "asset:sprites/trees.png",
+  "treeN": 4,
+  "snd": {
+    "pistol": "asset:audio/pistol.wav",
+    "shot2": "asset:audio/shot2.wav",
+    "shotgun": "asset:audio/shotgun.wav",
+    "fist": "asset:audio/fist.wav",
+    "thud": "asset:audio/thud.wav",
+    "hurt": "asset:audio/hurt.wav",
+    "pdie": "asset:audio/pdie.wav",
+    "alert": "asset:audio/alert.wav",
+    "die": "asset:audio/die.wav",
+    "gib": "asset:audio/gib.wav",
+    "head": "asset:audio/head.wav",
+    "pick": "asset:audio/pick.wav",
+    "cash": "asset:audio/cash.wav",
+    "key": "asset:audio/key.wav",
+    "weapon": "asset:audio/weapon.wav",
+    "gulp": "asset:audio/gulp.wav",
+    "medkit": "asset:audio/medkit.wav",
+    "door": "asset:audio/door.wav",
+    "locked": "asset:audio/locked.wav",
+    "switch": "asset:audio/switch.wav",
+    "empty": "asset:audio/empty.wav",
+    "lock": "asset:audio/lock.wav",
+    "unlock": "asset:audio/unlock.wav",
+    "chain": "asset:audio/chain.wav",
+    "boom": "asset:audio/boom.wav",
+    "bigboom": "asset:audio/bigboom.wav",
+    "horn": "asset:audio/horn.wav",
+    "wave": "asset:audio/wave.wav",
+    "engine": "asset:audio/engine.wav",
+    "splat": "asset:audio/splat.wav",
+    "menu": "asset:audio/menu.wav",
+    "grr": "asset:audio/grr.wav",
+    "bite": "asset:audio/bite.wav",
+    "push": "asset:audio/push.wav",
+    "power": "asset:audio/power.wav",
+    "combo": "asset:audio/combo.wav",
+    "combo2": "asset:audio/combo2.wav",
+    "snort": "asset:audio/snort.wav",
+    "drip": "asset:audio/drip.wav",
+    "bark": "asset:audio/bark.wav"
+  },
+  "dog": "asset:sprites/dog.png",
+  "pulp": {
+    "hero": "asset:pulp/hero.png",
+    "cop": "asset:pulp/cop.png",
+    "gunman": "asset:pulp/gunman.png",
+    "bandit": "asset:pulp/bandit.png",
+    "aviator": "asset:pulp/aviator.png"
+  },
+  "wSniper": {
+    "img": "asset:weapons/wSniper.png",
+    "w": 130,
+    "h": 92,
+    "x": 99,
+    "y": 70,
+    "n": 3
+  },
+  "torch": "asset:sprites/torch.png",
+  "wDyn": {
+    "img": "asset:weapons/wDyn.png",
+    "w": 141,
+    "h": 95,
+    "x": 108,
+    "y": 65,
+    "n": 3
+  },
+  "carSide": "asset:sprites/carSide.png",
+  "posterMeta": [
+    ["Underworld", "1927", "Paramount"],
+    ["The Racket", "1928", "Paramount"],
+    ["Little Caesar", "1931", "First National"],
+    ["The Public Enemy", "1931", "Warner Bros."],
+    ["The Great Train Robbery", "1903", "Edison"],
+    ["The Covered Wagon", "1923", "Paramount"],
+    ["Reefer Madness", "1936", "Motion Picture Ventures"]
+  ],
+  "graf": "asset:sprites/graf.png",
+  "grafN": 12,
+  "cards": ["asset:cards/00-AHM_1930_08_29.png", "asset:cards/01-GST_1929_12.png", "asset:cards/02-CST_1930_10_15.png", "asset:cards/03-IDM_1930_05.png", "asset:cards/04-MST_1929_02.png", "asset:cards/05-AHM_1928_12_18.png", "asset:cards/06-COW_1927_03.png", "asset:cards/07-COW_1927_08.png", "asset:cards/08-FR_1925_01.png", "asset:cards/09-FR_1929_10.png", "asset:cards/10-FR_1928_03.png", "asset:cards/11-FI_1930_09.png", "asset:cards/12-FI_1928_06.png", "asset:cards/13-MST_1928_04.png", "asset:cards/14-NWR_1925_08.png", "asset:cards/15-BAT_1930_12.png", "asset:cards/16-PEO_1921_11_10.png", "asset:cards/17-MMS_1922_12_02.png", "asset:cards/18-CLU_1929_12_25.png", "asset:cards/19-ACE_1929_10.png"],
+  "cardMeta": [
+    ["Ace-High Magazine", "August 1930"],
+    ["Gangster Stories", "December 1929"],
+    ["Complete Stories", "October 1930"],
+    ["The Illustrated Detective Magazine", "May 1930"],
+    ["Mystery Stories", "February 1929"],
+    ["Ace-High Magazine", "December 1928"],
+    ["Cowboy Stories", "March 1927"],
+    ["Cowboy Stories", "August 1927"],
+    ["Frontier", "January 1925"],
+    ["Frontier Stories", "October 1929"],
+    ["Frontier Stories", "March 1928"],
+    ["Fight Stories", "September 1930"],
+    ["Fight Stories", "June 1928"],
+    ["Mystery Stories", "April 1928"],
+    ["North-West Stories", "August 1925"],
+    ["Battle Stories", "December 1930"],
+    ["People\u2019s Favorite Magazine", "November 1921"],
+    ["Midnight Mystery Stories", "December 1922"],
+    ["Clues Detective Stories", "December 1929"],
+    ["Aces", "October 1929"]
+  ],
+  "cardFile": ["AHM_1930_08_29", "GST_1929_12", "CST_1930_10_15", "IDM_1930_05", "MST_1929_02", "AHM_1928_12_18", "COW_1927_03", "COW_1927_08", "FR_1925_01", "FR_1929_10", "FR_1928_03", "FI_1930_09", "FI_1928_06", "MST_1928_04", "NWR_1925_08", "BAT_1930_12", "PEO_1921_11_10", "MMS_1922_12_02", "CLU_1929_12_25", "ACE_1929_10"],
+  "cardBack": "asset:ui/cardBack.png",
+  "wFlame": {
+    "img": "asset:weapons/wFlame.png",
+    "w": 229,
+    "h": 125,
+    "x": 91,
+    "y": 75,
+    "n": 4
+  },
+  "heavy": "asset:sprites/heavy.png",
+  "olive": "asset:ui/olive.png",
+  "amb": "asset:audio/ambience.mp3",
+  "houdini": "asset:ui/houdini.png"
+}

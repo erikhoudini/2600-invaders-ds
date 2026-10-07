@@ -1,0 +1,12 @@
+/* ============ tokens ============ */
+:root{
+  --ink:#000;--white:#fff;--grey:#d7d7d7;--red:#d70000;--bred:#ff0000;--yellow:#ffff00;--cyan:#00ffff;--blue:#0000d7;
+  --panel:#060606;--line:#232323;
+  --head:"Silkscreen","Courier New",monospace;--body:"VT323","Courier New",monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--white)}
+body{font-family:var(--body);overflow:hidden;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:none;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+
