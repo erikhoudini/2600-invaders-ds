@@ -1,1 +1,30 @@
-{"snd":{},"music":{}}
+{
+ "snd": {
+  "bigboom": "asset:sfx/bigboom.mp3",
+  "boom1": "asset:sfx/boom1.mp3",
+  "boom2": "asset:sfx/boom2.mp3",
+  "boom3": "asset:sfx/boom3.mp3",
+  "bump1": "asset:sfx/bump1.mp3",
+  "bump2": "asset:sfx/bump2.mp3",
+  "crash1": "asset:sfx/crash1.mp3",
+  "crash2": "asset:sfx/crash2.mp3",
+  "crash3": "asset:sfx/crash3.mp3",
+  "engine2": "asset:sfx/engine2.wav",
+  "glass": "asset:sfx/glass.mp3",
+  "horn": "asset:sfx/horn.mp3",
+  "mg1": "asset:sfx/mg1.wav",
+  "mg2": "asset:sfx/mg2.wav",
+  "nitro": "asset:sfx/nitro.mp3",
+  "rocket": "asset:sfx/rocket.mp3",
+  "shotgun": "asset:sfx/shotgun.mp3",
+  "skid": "asset:sfx/skid.wav"
+ },
+ "music": {
+  "title": "asset:music/title.mp3",
+  "waves": "asset:music/waves.mp3",
+  "race": "asset:music/race.mp3"
+ },
+ "img": {
+  "explosion": "asset:sprites/explosion.png"
+ }
+}

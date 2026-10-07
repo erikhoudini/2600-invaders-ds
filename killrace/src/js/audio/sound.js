@@ -30,6 +30,7 @@ function loopsOff(){for(const k in LOOP){try{LOOP[k].s.stop();}catch(e){}delete 
 // true if the real engine loop is running, so the caller can skip Bagman's
 function engineSnd(rpm,gear,thr,boost,skid,slip){if(!has('engine2'))return false;if(rumble)rumbleOn(false);
   loopSet('eng','engine2',.22+.25*thr,.55+rpm*.75+gear*.07+(boost?.15:0));
+  loopSet('nitro','nitro',boost?.3:0,1);
   loopSet('skid','skid',skid?Math.min(.5,.12+slip*.08):0,.9+Math.min(.3,slip*.05));return true;}
 
 /* ---------- music: an <audio> element, so the big file streams instead of decoding ---------- */
@@ -39,3 +40,12 @@ function musicFor(mode){const src=(KA.music||{})[mode];if(!src||!MUSIC.on){music
   const el=new Audio(src);el.loop=true;el.volume=.45*OPT.vol/7;MUSIC.el=el;MUSIC.cur=mode;el.play().catch(()=>{MUSIC.cur='';});}
 function musicStop(){if(MUSIC.el){MUSIC.el.pause();MUSIC.el=null;}MUSIC.cur='';}
 function musicToggle(){MUSIC.on=!MUSIC.on;try{localStorage.setItem('killrace.music',MUSIC.on?'1':'0');}catch(e){}feed(MUSIC.on?'MUSIC ON':'MUSIC OFF',C_GR);if(MUSIC.on)musicFor(GAMEMODE);else musicStop();}
+
+/* ---------- Kill Race's own sprites: Kenney's pixel explosion, nine frames of 96x91 ---------- */
+let EXPL=null;
+async function loadKR(){try{if(KA.img&&KA.img.explosion)EXPL=pix(await loadImg(KA.img.explosion));}catch(e){EXPL=null;}}
+// every blast gets a fireball billboard on top of Bagman's particles
+function boomSprite(x,y,big,z=0){if(EXPL)L.booms.push({x,y,z,t:0,s:big?2.6:1.9,f:rnd()<.5});}
+function updBooms(dt){for(let i=L.booms.length-1;i>=0;i--){const b=L.booms[i];b.t+=dt;if(b.t>=.8)L.booms.splice(i,1);}}
+function drawBoom(b){const fr=Math.min(8,Math.floor(b.t/.8*9)),keep=light;light=Math.max(light,1.6-fr*.1);
+  drawSprite(EXPL,fr*96,0,96,91,b.x,b.y,b.s*(1+b.t*.6),false,b.f,null,b.z-.25*b.s);light=keep;}

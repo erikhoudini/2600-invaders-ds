@@ -18,7 +18,7 @@ function damageCar(c,dmg,by,ang){if(c.dead||dmg<=0)return;c.hp-=dmg;c.flash=.07;
   if(c.hp<=0)wreckCar(c);}
 // a car that dies goes up, leaves a burning shell that still blocks the road for a while, and pays out if we did it
 function wreckCar(c){c.dead=1;c.wreck=1;c.wreckT=12;c.vx*=.4;c.vy*=.4;c.burn=1;airLaunch(c,(c.parked?3:4.5)+rnd()*2/c.mass,(rnd()-.5)*5);
-  const byP=tm-c.lastP<4;kaboom(c.x,c.y,true,byP,false,.45);
+  const byP=tm-c.lastP<4;playAny(['glass'],Math.max(.15,1-Math.hypot(c.x-P.x,c.y-P.y)/25),.9+rnd()*.2);kaboom(c.x,c.y,true,byP,false,.45);
   if(P.lock===c)P.lock=null;if(!byP)return;
   if(c.parked){P.score+=250;feed('+$250 PARKED CAR',C_GR);return;}
   if(c.traffic){P.score+=300;feed('+$300 CIVILIAN',C_GR);addTime(2);return;}
@@ -40,7 +40,7 @@ function updFuses(dt){for(let i=L.fuses.length-1;i>=0;i--){const t=L.fuses[i];t.
 
 // the one explosion: drums, pumps, dynamite, dying cars. Bagman's blast, with cars in it
 // pk scales the hit on the player: a car you just wrecked beside you should sting, not kill
-function kaboom(x,y,big,byP,self,pk=1){const R=big?3.6:2.8,DMG=big?160:115;
+function kaboom(x,y,big,byP,self,pk=1){const R=big?3.6:2.8,DMG=big?160:115;boomSprite(x,y,big);
   stainFloor(x,y,R*.5,3);
   for(let a=0;a<12;a++){const ang=a/12*TAU,h=cast(x,y,Math.cos(ang),Math.sin(ang),R*.8);if(h&&!h.door)stainWall(h.id,h.face,h.u,.35+rnd()*.4,.9,4);}
   for(let k=0;k<50;k++){const a=rnd()*TAU,sp=.5+rnd()*3;addPart(x,y,.2+rnd()*.6,Math.cos(a)*sp,Math.sin(a)*sp,rnd()*1.6,rnd()<.5?[255,200,0]:[255,90,0],.03+rnd()*.06,.35+rnd()*.5,2);}

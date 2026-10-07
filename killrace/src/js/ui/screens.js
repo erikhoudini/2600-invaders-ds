@@ -25,7 +25,10 @@ function titleFrame(dt){titleT+=dt;P.a=-Math.PI/2+Math.sin(titleT*.12)*1.4;P.fov
   show(2);}
 
 function pauseDraw(){light=1;renderBack();skyFill();krWalls();krSprites();renderParts();drawHood();drawGun();dim(.35);clash();overlayKR();hud();
-  shadowText('PAUSED',60,C_Y,3);textC(UI_TOUCH?'TAP TO RESUME':'ESC RESUMES   Q QUITS',100,C_W,1,C_K);show(1);}
+  shadowText('PAUSED',50,C_Y,3);textC(UI_TOUCH?'TAP TO RESUME':'ESC RESUMES   Q QUITS   M MUSIC',86,C_W,1,C_K);
+  CREDITS.forEach((l,i)=>textC(l,112+i*9,i?C_GR:C_C,1,C_K));show(1);}
+// CC-BY and CC-BY-SA sounds need credit where the game is played; full list in killrace/assets/CREDITS.md
+const CREDITS=['SOUND AND MUSIC','ENGINE: QUBODUP (CC-BY-SA 3.0)','SKID: AUDIBLE-EDGE, QUBODUP (CC-BY 3.0)','CRASHES: THE AUDIO MONKEY (CC-BY-SA 4.0)','HORN: MIKE KOENIG, AURIA, ARTHUR (CC-BY 3.0)','VIA SUPERTUXKART. KENNEY, JUHANI JUNKALA,','NENE, FUPI, ZANE LITTLE, ZAQRAVEN (CC0)'];
 
 function gameOver(){state='over';overT=0;rumbleOn(false);setBody('m-cine');ambStop();
   P.newBest=P.score>BEST.score;if(P.newBest)BEST.score=P.score;BEST.wave=Math.max(BEST.wave,WAVE.n);saveBest();}

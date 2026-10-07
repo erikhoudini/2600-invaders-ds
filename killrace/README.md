@@ -2,7 +2,8 @@
 
 *Somewhere in Nevada. After dark.* A first-person car-combat prototype in the
 spirit of Carmageddon and Twisted Metal. It runs on the BAGMAN engine and uses
-only BAGMAN's art and sound.
+BAGMAN's art and sound, plus credited free sound, music and one explosion
+sprite (see [assets/CREDITS.md](assets/CREDITS.md)).
 
 You drive through a night-time grid town with an AK out the window. The
 Geckos race you or send cars at you in waves. Deputies come out on foot, dogs
@@ -58,6 +59,7 @@ car in the garage (left/right, Enter to go, Esc to go back):
 | Q, 1–4, wheel | RB | Gun | twin AK / pump / dynamite / rockets |
 | B | Y | Drum | drop a fuel drum behind you as a mine |
 | H | Back | Horn | horn; pedestrians scatter |
+| M | | | music on/off |
 | Esc / P | Start | Menu | pause |
 
 ## What's in the prototype
@@ -194,7 +196,24 @@ Three things had to be written new rather than reused:
 - **The hood.** It's cast like a floor and painted from Bagman's red car wall
   texture.
 
-No new art or sound files were made. OpenGameArt wasn't needed.
+No art was drawn and no sounds were made for it. Everything that isn't
+Bagman's is free, credited material, listed file by file in
+[`assets/CREDITS.md`](assets/CREDITS.md) and shown on the pause screen:
+- **Sound.** A real engine loop pitched to the revs, a tyre squeal loop,
+  crashes, a horn and a nitro whoosh (SuperTuxKart's sound set: qubodup,
+  audible-edge, The Audio Monkey, Mike Koenig and others; CC0, CC-BY and
+  CC-BY-SA). Metal impacts, glass and explosions are Kenney's (CC0). The
+  retro machine gun, shotgun and rocket launch are Juhani Junkala's (CC0).
+  Any sound that's missing falls back to the Bagman sample it replaces.
+- **Music.** CC0 tracks: "Starlight City" (Zane Little) on the menus, "Once
+  More [Metal]" (nene) in waves, "Synthwave House Loop" (Fupi) in races.
+- **The explosion.** Kenney's nine-frame pixel explosion (CC0) plays over
+  every blast, on top of Bagman's particles.
+
+These come from Kenney, OpenGameArt and SuperTuxKart, fetched through GitHub
+mirrors of those packs. Kill Race's own table, `assets/assets.json`, is built
+in the same way as Bagman's. The single-file build is about 6.6 MB, up from
+3 MB.
 
 ## Known limits and next steps
 
@@ -211,7 +230,6 @@ No new art or sound files were made. OpenGameArt wasn't needed.
   should be easy for a person with lock-on; nobody has played wave 6+.
 - **Enemy cars only target you.** They don't fight each other, though their
   bullets and explosions do hurt each other.
-- **No music.** Bagman has none either: beeper effects and ambience only.
 - **Ideas:**
   - a fare-and-carnage taxi mode (Quarantine, the DOS game behind the
     idea)
